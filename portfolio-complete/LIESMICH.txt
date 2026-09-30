@@ -1,0 +1,3 @@
+Portfolio-Complete.html ist dein bestehendes Portfolio mit einem neuen letzten Projekt (05, "Portfolio-Website").
+Lege den Ordner "julia-site" neben Portfolio-Complete.html, dort liegt die eingebettete Website (index.html).
+Deine vorhandenen Ordner "assets" und "larissa-site" müssen wie bisher neben der Datei liegen.
