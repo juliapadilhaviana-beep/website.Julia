@@ -554,6 +554,8 @@ input[type=range]:active::-webkit-slider-thumb{transform:scale(1.15)}
     <a href="#top" class="logo" aria-label="Julia Viana">Julia Viana</a>
     <nav class="nav-links mono" aria-label="Hauptnavigation" data-i18n-aria="nav_aria">
       <a href="#about" data-i18n="nav_about">Über mich</a>
+      <a href="#process" data-i18n="nav_process">Prozess</a>
+      <a href="#demo" data-i18n="nav_demo">Demo</a>
       <a href="#services" data-i18n="nav_services">Leistungen</a>
       <a href="#contact" data-i18n="nav_contact">Kontakt</a>
     </nav>
@@ -570,10 +572,12 @@ input[type=range]:active::-webkit-slider-thumb{transform:scale(1.15)}
 </header>
 <div class="menu" id="menu">
   <a href="#about"><small>01</small><span data-i18n="nav_about">Über mich</span></a>
-  <a href="#services"><small>02</small><span data-i18n="nav_services">Leistungen</span></a>
-  <a href="#contact"><small>03</small><span data-i18n="nav_contact">Kontakt</span></a>
+  <a href="#process"><small>02</small><span data-i18n="nav_process">Prozess</span></a>
+  <a href="#demo"><small>03</small><span data-i18n="nav_demo">Demo</span></a>
+  <a href="#services"><small>04</small><span data-i18n="nav_services">Leistungen</span></a>
+  <a href="#contact"><small>05</small><span data-i18n="nav_contact">Kontakt</span></a>
 </div>
-<div class="counter mono" id="counter"><span id="cNum">01</span> / <span id="cTot">05</span> — <span id="cName">Start</span></div>
+<div class="counter mono" id="counter"><span id="cNum">01</span> / <span id="cTot">07</span> — <span id="cName">Start</span></div>
 
 <main id="top">
 
@@ -659,10 +663,102 @@ input[type=range]:active::-webkit-slider-thumb{transform:scale(1.15)}
   </div>
 </section>
 
-<!-- ============ 06 LEISTUNGEN ============ -->
-<section class="sec" id="services" data-scene="03" data-name="Leistungen" data-name-pt="Serviços">
+<!-- ============ 03 PROZESS (sticky) ============ -->
+<section class="sec dark process" id="process" data-scene="03" data-name="Prozess" data-name-pt="Processo">
+  <div class="proc-in">
+    <div class="proc-head">
+      <div class="sec-label mono" style="margin-bottom:10px"><span>03 —</span><span data-i18n="p_label">Prozess</span></div>
+      <h2 data-reveal data-i18n="p_h">Vom Rauschen zum <em>Signal</em>.</h2>
+    </div>
+    <div class="proc-body">
+      <div>
+        <div class="steps" id="steps">
+          <article class="pstep on">
+            <div class="mono">01 — <span data-i18n="s1n">Forschung</span></div>
+            <h3 data-i18n="s1h">Zuhören</h3>
+            <p data-i18n="s1p">Ich höre zu, bevor ich zeichne. Interviews, Personas und Customer Journeys machen aus vagen Annahmen belastbare Erkenntnisse.</p>
+            <div class="tags mono"><span>Interviews</span><span>Personas</span><span>Journey Maps</span><span>Usability Testing</span></div>
+          </article>
+          <article class="pstep">
+            <div class="mono">02 — <span data-i18n="s2n">Struktur</span></div>
+            <h3 data-i18n="s2h">Ordnen</h3>
+            <p data-i18n="s2p">Inhalte bekommen einen Platz. Informationsarchitektur, Sitemap und Nutzerflüsse zeigen, was wichtig ist und was nicht.</p>
+            <div class="tags mono"><span>Sitemap</span><span>Card Sorting</span><span>User Flows</span></div>
+          </article>
+          <article class="pstep">
+            <div class="mono">03 — Design</div>
+            <h3 data-i18n="s3h">Gestalten</h3>
+            <p data-i18n="s3p">Aus Struktur wird Form: Typografie, Farbe und Raum. Styleguides und Design-Systeme halten alles konsistent.</p>
+            <div class="tags mono"><span>Typografie</span><span>Styleguide</span><span>Design System</span></div>
+          </article>
+          <article class="pstep">
+            <div class="mono">04 — <span data-i18n="s4n">Prototyp</span></div>
+            <h3 data-i18n="s4h">Erleben</h3>
+            <p data-i18n="s4p">Klickbar, testbar, überzeugend. Wireframes und Prototypen zeigen, wie es sich anfühlt, bevor etwas gebaut wird.</p>
+            <div class="tags mono"><span>Wireframes</span><span>Prototyping</span><span>Responsive</span></div>
+          </article>
+        </div>
+        <div class="pidx mono" id="pidx">
+          <button type="button" class="on">01</button><button type="button">02</button><button type="button">03</button><button type="button">04</button>
+        </div>
+        <div class="pmeta mono"><span><span data-i18n="p_clarity">Klarheit</span> <b id="clar" style="font-weight:400;color:#fff">25</b>%</span><span class="bar" id="pbar"><i></i></span></div>
+      </div>
+
+      <div class="stage-wrap">
+        <div class="stage st1" id="stage" role="img" aria-label="Eine Oberfläche wird von Skizze zu Prototyp schärfer" data-i18n-aria="stage_aria">
+          <div class="p nav2" data-l="nav" style="--x:6%;--y:5%;--w:88%;--h:7%;--dx:40%;--dy:930%;--r:-8deg"><i class="lg"></i><span class="sk"><i></i><i></i><i></i></span></div>
+          <div class="p title" data-l="h1" style="--x:6%;--y:17%;--w:62%;--h:21%;--dx:80%;--dy:150%;--r:11deg"><span class="sk"><i></i><i style="width:70%"></i></span><span class="t" data-i18n="st_t">Klar.</span></div>
+          <div class="p btn" data-l="cta" style="--x:72%;--y:17%;--w:22%;--h:7%;--dx:-260%;--dy:900%;--r:-14deg"><span class="sk"><i></i></span><span class="t" data-i18n="st_b">Starten</span></div>
+          <div class="p img" data-l="img" style="--x:6%;--y:41%;--w:88%;--h:26%;--dx:20%;--dy:-40%;--r:-4deg"><span class="x"></span></div>
+          <div class="p card" data-l="card" style="--x:6%;--y:71%;--w:27%;--h:22%;--dx:210%;--dy:-190%;--r:14deg"><span class="t" data-i18n="st_c1">Forschen</span><span class="sk"><i></i><i></i><i style="width:60%"></i></span></div>
+          <div class="p card" data-l="card" style="--x:36.5%;--y:71%;--w:27%;--h:22%;--dx:-120%;--dy:-520%;--r:-17deg"><span class="t" data-i18n="st_c2">Ordnen</span><span class="sk"><i></i><i></i><i style="width:60%"></i></span></div>
+          <div class="p card" data-l="card" style="--x:67%;--y:71%;--w:27%;--h:22%;--dx:-260%;--dy:-40%;--r:9deg"><span class="t" data-i18n="st_c3">Gestalten</span><span class="sk"><i></i><i></i><i style="width:60%"></i></span></div>
+          <div class="note" style="left:8%;top:58%;--r:-6deg" data-i18n="n1">Wer klickt hier?</div>
+          <div class="note" style="left:52%;top:6%;--r:5deg" data-i18n="n2">zu viel Text</div>
+          <div class="note" style="left:60%;top:46%;--r:-3deg" data-i18n="n3">wo anfangen?</div>
+          <div class="note" style="left:14%;top:84%;--r:4deg">???</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 05 DEMO ============ -->
+<section class="sec" id="demo" data-scene="04" data-name="Demo" data-name-pt="Demo" style="background:#fafaf8">
   <div class="wrap">
-    <div class="sec-label mono"><span>03 —</span><span data-i18n="sv_label">Leistungen</span></div>
+    <div class="sec-label mono"><span>04 —</span><span data-i18n="d_label">Interaktive Demo</span></div>
+    <h2 class="h2" data-reveal data-i18n="d_h">Zieh am Regler. Sieh, wie <em>Ordnung</em> entsteht.</h2>
+    <div class="demo-wrap" data-fade>
+      <div class="demo" id="demoUi" data-cursor="Ziehen">
+        <div class="dread mono"><span data-i18n="d_score">Ordnung</span> <b id="dscore">000</b>%</div>
+        <span class="anno dmeasure" id="dAnno"></span>
+        <span class="dguide v" style="left:4%"></span><span class="dguide v" style="left:96%"></span><span class="dguide h" style="top:14%"></span><span class="dguide h" style="top:94%"></span>
+
+        <div class="d nav3" style="--x:4%;--y:4%;--w:92%;--h:8%;--dx:-6;--dy:44;--r:-6;--sc:.05;--bl:2">
+          <span class="br">Atelier</span><span class="ls"><span data-i18n="dn1">Start</span><span data-i18n="dn2">Arbeiten</span><span data-i18n="dn3">Kontakt</span></span>
+        </div>
+        <div class="d h" style="--x:4%;--y:19%;--w:52%;--h:28%;--dx:36;--dy:22;--r:7;--sc:-.2;--bl:4"><span data-i18n="dh">Finde, was <em>zählt</em>.</span></div>
+        <div class="d pp" style="--x:4%;--y:50%;--w:44%;--h:11%;--dx:-3;--dy:-26;--r:-9;--sc:.25;--bl:3"><span data-i18n="dp">Ein klarer Weg von der Frage zur Entscheidung — ohne Umwege.</span></div>
+        <div class="d bt" style="--x:4%;--y:65%;--w:18%;--h:9%;--dx:40;--dy:-18;--r:12;--sc:.35;--bl:2"><span data-i18n="db">Starten</span></div>
+        <div class="d im" style="--x:60%;--y:19%;--w:36%;--h:55%;--dx:-40;--dy:50;--r:-8;--sc:-.25;--bl:5"></div>
+        <div class="d cd" style="--x:4%;--y:80%;--w:29%;--h:15%;--dx:30;--dy:-60;--r:-11;--sc:.1;--bl:4"><b data-i18n="dc1">Fragen</b><span data-i18n="dc1s">Was brauchst du?</span></div>
+        <div class="d cd" style="--x:35.5%;--y:80%;--w:29%;--h:15%;--dx:-50;--dy:-90;--r:8;--sc:-.1;--bl:3"><b data-i18n="dc2">Vergleichen</b><span data-i18n="dc2s">Optionen im Überblick.</span></div>
+        <div class="d cd" style="--x:67%;--y:80%;--w:29%;--h:15%;--dx:-20;--dy:-130;--r:-5;--sc:.2;--bl:5"><b data-i18n="dc3">Entscheiden</b><span data-i18n="dc3s">Mit gutem Gefühl.</span></div>
+      </div>
+      <div class="range-row mono">
+        <span data-i18n="d_chaos">Chaos</span>
+        <input type="range" id="range" min="0" max="100" value="0" step="1" aria-label="Von Chaos zu Klarheit" data-i18n-aria="d_aria" data-cursor="Ziehen">
+        <span data-i18n="d_clarity">Klarheit</span>
+      </div>
+      <p class="dnote" data-i18n="d_note">Dasselbe Layout, dieselben Inhalte. Der Unterschied: Raster, Abstände, Hierarchie.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 06 LEISTUNGEN ============ -->
+<section class="sec" id="services" data-scene="05" data-name="Leistungen" data-name-pt="Serviços">
+  <div class="wrap">
+    <div class="sec-label mono"><span>05 —</span><span data-i18n="sv_label">Leistungen</span></div>
     <h2 class="h2" data-reveal data-i18n="sv_h">Was ich <em>für dich</em> tue.</h2>
     <ul class="svc">
       <li data-fade><div class="svc-row">
@@ -685,18 +781,18 @@ input[type=range]:active::-webkit-slider-thumb{transform:scale(1.15)}
 </section>
 
 <!-- ============ 04 PORTFOLIO (vorerst leer) ============ -->
-<section class="sec" id="work" data-scene="04" data-name="Portfolio" data-name-pt="Portfólio">
+<section class="sec" id="work" data-scene="06" data-name="Portfolio" data-name-pt="Portfólio">
   <div class="wrap">
-    <div class="sec-label mono"><span>04 —</span><span data-i18n="w_label">Portfolio</span></div>
+    <div class="sec-label mono"><span>06 —</span><span data-i18n="w_label">Portfolio</span></div>
     <h2 class="h2" data-reveal data-i18n="we_h">Portfolio in <em>Vorbereitung</em>.</h2>
     <p class="works-intro" data-fade data-i18n="we_p">Hier entsteht eine Auswahl meiner Arbeiten.</p>
   </div>
 </section>
 
 <!-- ============ 07 KONTAKT ============ -->
-<section class="sec dark contact" id="contact" data-scene="05" data-name="Kontakt" data-name-pt="Contato">
+<section class="sec dark contact" id="contact" data-scene="07" data-name="Kontakt" data-name-pt="Contato">
   <div class="wrap">
-    <div class="sec-label mono"><span>05 —</span><span data-i18n="k_label">Kontakt</span></div>
+    <div class="sec-label mono"><span>07 —</span><span data-i18n="k_label">Kontakt</span></div>
     <h2 class="statement" data-reveal data-i18n="k_h">Lass uns dein <em>Chaos</em> ordnen.</h2>
     <a class="cta" href="mailto:juliavianawork@gmail.com?subject=Projektanfrage" data-cursor="Mail"><span data-i18n="k_cta">Projekt besprechen</span><span class="ar" aria-hidden="true">→</span></a>
     <div class="clist" data-fade>
