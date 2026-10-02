@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Kalender Weiss 3D</title>
+<style>
+:root{
+  --paper:#f6f4f0; --paper2:#ffffff; --ink:#15151a; --muted:#8b8a90; --line:rgba(21,21,26,.09);
+  --gold:#b08d57; --gold-soft:#f3ece0;
+  --c-health:#e0735a; --c-work:#5b7bd5; --c-private:#4aa383; --c-travel:#b08d57;
+  --shadow:0 30px 50px -24px rgba(40,36,30,.28),0 8px 16px -10px rgba(40,36,30,.12);
+}
+*{box-sizing:border-box;margin:0}
+body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--ink);min-height:100vh;
+  background:radial-gradient(1100px 600px at 50% -10%,#fff,#ece9e3 70%);
+  display:flex;flex-wrap:wrap;gap:44px;justify-content:center;align-items:center;padding:48px 16px}
+.stage{perspective:1500px}
+.phone{position:relative;width:402px;height:875px;max-width:calc(100vw - 32px);border-radius:56px;overflow:hidden;
+  background:linear-gradient(170deg,#fff,var(--paper) 70%,#efece6);
+  box-shadow:0 0 0 9px #1a1a1f,0 0 0 10px #4a4a52,0 60px 90px -30px rgba(40,36,30,.5),0 30px 40px -24px rgba(40,36,30,.3);
+  transform-style:preserve-3d;transform:rotateY(var(--ry,0deg)) rotateX(var(--rx,0deg));transition:transform .25s ease-out}
+.scene{position:absolute;inset:0;transform-style:preserve-3d;pointer-events:none}
+.layer{position:absolute;transition:transform .25s ease-out;transform:translate3d(calc(var(--px,0)*var(--d)*1px),calc(var(--py,0)*var(--d)*1px),0)}
+/* porcelain objects */
+.sphere{border-radius:50%;background:radial-gradient(circle at 32% 26%,#fff 0,#fbfaf8 25%,#e7e3dc 70%,#d3cec4 100%);
+  box-shadow:inset -8px -12px 22px rgba(120,110,95,.22),0 30px 36px -16px rgba(60,52,40,.35)}
+.sphere.gold{background:radial-gradient(circle at 32% 26%,#fff6e6 0,#e8cf9d 40%,#b08d57 100%);
+  box-shadow:inset -6px -10px 18px rgba(90,60,20,.35),0 20px 26px -12px rgba(120,86,36,.5)}
+.torus{filter:drop-shadow(0 34px 26px rgba(60,52,40,.28))}
+.float{animation:float 8s ease-in-out infinite}.float.b{animation-duration:10s;animation-delay:-4s}
+@keyframes float{50%{translate:0 -12px}}
+@media (prefers-reduced-motion:reduce){.float{animation:none}}
+
+.ui{position:absolute;inset:0;padding:0 24px;display:flex;flex-direction:column;transform:translateZ(40px)}
+.status{display:flex;justify-content:space-between;align-items:center;height:54px;padding:6px 14px 0;font-weight:600;font-size:15px}
+.status i{width:18px;height:10px;border-radius:3px;background:var(--ink);display:inline-block;margin-left:6px}
+.home{position:absolute;bottom:8px;left:50%;translate:-50% 0;width:140px;height:5px;border-radius:9px;background:var(--ink)}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
+button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.card{background:rgba(255,255,255,.78);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border:1px solid #fff;border-radius:26px;box-shadow:var(--shadow)}
+.icon{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:#fff;border:1px solid var(--line);
+  box-shadow:0 14px 20px -10px rgba(40,36,30,.3);transition:.2s}
+.icon:hover{transform:translateY(-2px) translateZ(20px)}
+.icon svg{width:20px;height:20px;stroke:var(--ink);fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.topbar{display:flex;justify-content:space-between;align-items:flex-end;margin-top:22px}
+.topbar small{color:var(--muted);font-size:14px;letter-spacing:.02em}
+.topbar h1{font-size:38px;font-weight:600;letter-spacing:-1.2px;margin-top:2px}
+.topbar .btns{display:flex;gap:10px}
+.chips{display:flex;gap:8px;margin:18px 0 6px;overflow-x:auto;scrollbar-width:none;padding:4px 2px 12px}
+.chip{display:inline-flex;align-items:center;gap:7px;padding:8px 14px;border-radius:99px;font-size:13px;white-space:nowrap;
+  background:#fff;border:1px solid var(--line);transition:.2s}
+.chip i{width:7px;height:7px;border-radius:50%;background:var(--c)}
+.chip[aria-pressed=true]{background:var(--ink);color:#fff;border-color:var(--ink);transform:translateZ(20px) translateY(-2px);
+  box-shadow:0 14px 18px -10px rgba(21,21,26,.6)}
+.tabbar{position:absolute;left:24px;right:24px;bottom:26px;height:64px;padding:0 10px;display:flex;justify-content:space-around;align-items:center;
+  transform:translateZ(60px)}
+.tab{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;color:var(--muted);transition:.2s}
+.tab svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.tab.on{background:var(--ink);color:#fff;box-shadow:0 12px 16px -8px rgba(21,21,26,.6)}
+.fab{position:absolute;right:24px;bottom:104px;width:58px;height:58px;border-radius:50%;display:grid;place-items:center;font-size:28px;font-weight:300;color:#fff;
+  background:radial-gradient(circle at 30% 25%,#e8cf9d,#b08d57 70%);box-shadow:inset -4px -6px 10px rgba(90,60,20,.35),0 22px 28px -10px rgba(120,86,36,.6);
+  transform:translateZ(80px);transition:.2s}
+.fab:hover{transform:translateZ(100px) scale(1.06)}
+
+/* S1 */
+.s1 .date{margin-top:70px;text-align:center;color:var(--muted);font-size:15px;letter-spacing:.04em}
+.s1 .clock{text-align:center;font-weight:800;font-size:100px;letter-spacing:-4px;line-height:1.05;color:var(--ink);text-shadow:0 1px 0 #fff,0 26px 30px rgba(60,52,40,.28)}
+.s1 .idle{text-align:center;margin-top:12px}
+.s1 .idle h2{font-size:22px;font-weight:600}
+.s1 .idle p{display:flex;gap:8px;justify-content:center;align-items:center;margin-top:6px;color:var(--muted);font-size:15px}
+.check{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;background:var(--ink);color:#fff}
+.next{margin-top:auto;margin-bottom:112px;padding:18px;text-align:left;width:100%;transition:transform .2s}
+.next:hover{transform:translateY(-4px) translateZ(20px)}
+.tag{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:99px;font-size:12px;background:var(--gold-soft);color:#6b5430}
+.tag::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--gold)}
+.next h3{font-weight:500;font-size:24px;margin:12px 0 4px}
+.next .sub{font-size:13px;color:var(--muted)}
+.bar{height:4px;border-radius:9px;background:var(--line);margin:14px 0 8px}.bar b{display:block;height:100%;width:62%;border-radius:9px;background:var(--ink)}
+.leave{font-size:13px;font-weight:600}
+
+/* S2 */
+.days{display:flex;gap:6px;margin:6px 0 12px}
+.day{flex:1;padding:10px 0;border-radius:18px;text-align:center;font-size:11px;color:var(--muted);transition:.2s}
+.day b{display:block;font-size:17px;color:var(--ink);margin-top:3px;font-weight:600}
+.day.on{background:var(--ink);color:#bbb;transform:translateZ(26px) translateY(-3px);box-shadow:0 16px 20px -10px rgba(21,21,26,.6)}.day.on b{color:#fff}
+.tl{position:relative;flex:1;margin-bottom:108px;padding:10px 16px 10px 8px;overflow:hidden}
+.row{display:flex;align-items:center;height:54px;gap:10px;font-size:12px;color:var(--muted)}
+.row span{width:38px;text-align:right}.row hr{flex:1;border:0;height:1px;background:var(--line)}
+.now{position:absolute;left:8px;right:16px;top:calc(10px + 27px*.5 + 27px);display:flex;align-items:center;gap:10px}
+.now em{font-style:normal;font-size:11px;font-weight:600;color:#fff;background:var(--gold);border-radius:8px;padding:2px 6px}
+.now i{flex:1;height:1.5px;background:var(--gold)}
+.event{position:absolute;left:60px;right:16px;height:50px;padding:8px 14px 8px 18px;border-radius:16px;text-align:left;background:#fff;border:1px solid var(--line);
+  box-shadow:0 20px 24px -12px rgba(40,36,30,.35);transform:translateZ(30px);transition:.2s;font-size:13px}
+.event::before{content:"";position:absolute;left:8px;top:12px;bottom:12px;width:3px;border-radius:3px;background:var(--c)}
+.event:hover{transform:translateZ(54px) translateY(-3px)}
+.event b{display:block;font-weight:600}.event small{color:var(--muted)}
+
+/* S3 */
+.s3 header{margin-top:20px}.s3 header small{color:var(--muted);font-size:14px}
+.s3 h1{font-size:44px;line-height:1.04;font-weight:600;letter-spacing:-1.6px;margin-top:4px}.s3 h1 span{display:block;color:var(--muted);font-weight:400}
+.route{padding:14px 16px;margin:16px 0;text-align:center}.route p{font-size:12px;color:var(--muted)}
+.go{display:flex;align-items:center;gap:10px;margin:8px auto;padding:6px 18px 6px 6px;border-radius:99px;background:var(--ink);color:#fff;width:fit-content;font-size:15px;
+  box-shadow:0 14px 20px -10px rgba(21,21,26,.6)}
+.go u{width:34px;height:34px;border-radius:50%;background:#fff;color:var(--ink);display:grid;place-items:center;text-decoration:none}
+.lbl{font-size:12px;color:var(--muted);margin-top:14px;letter-spacing:.04em}.val{font-size:14px;font-weight:500;margin-top:2px}
+.seg{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
+.seg button{padding:8px 15px;border-radius:99px;font-size:13px;background:#fff;border:1px solid var(--line);transition:.2s;display:inline-flex;gap:7px;align-items:center}
+.seg button i{width:7px;height:7px;border-radius:50%;background:var(--c)}
+.seg button[aria-pressed=true]{background:var(--ink);color:#fff;border-color:var(--ink);transform:translateZ(22px) translateY(-2px);box-shadow:0 14px 18px -10px rgba(21,21,26,.6)}
+.rem{display:flex;justify-content:space-between;align-items:center;margin-top:16px;padding-top:14px;border-top:1px solid var(--line);font-size:13px}
+.sw{width:50px;height:30px;border-radius:99px;background:#d9d6cf;position:relative;box-shadow:inset 0 3px 6px rgba(0,0,0,.18);transition:.25s;flex:none}
+.sw::after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:radial-gradient(circle at 30% 28%,#fff,#eee 70%);box-shadow:0 6px 10px rgba(0,0,0,.28);transition:.25s}
+.sw[aria-checked=true]{background:var(--ink)}.sw[aria-checked=true]::after{left:23px}
+.actions{margin-top:auto;margin-bottom:46px;display:flex;gap:10px;align-items:center}
+.edit{flex:1;padding:15px;border-radius:99px;font-weight:600;color:#fff;background:var(--ink);box-shadow:0 20px 26px -12px rgba(21,21,26,.7);transition:.2s}
+.edit:hover{transform:translateY(-3px) translateZ(20px)}
+.del{font-size:12px;color:#b3412a;text-align:center;margin-top:10px}
+
+/* S4 */
+.s4 .group{margin-top:18px;padding:6px 16px}
+.s4 .set{display:flex;justify-content:space-between;align-items:center;padding:14px 0;font-size:14px;border-bottom:1px solid var(--line)}
+.s4 .set:last-child{border:0}.s4 .set small{display:block;color:var(--muted);font-size:12px;margin-top:2px}
+.s4 h4{font-size:12px;letter-spacing:.08em;color:var(--muted);font-weight:500;margin:22px 0 -6px 4px;text-transform:uppercase}
+.cat{display:flex;align-items:center;gap:12px}.cat i{width:14px;height:14px;border-radius:50%;background:var(--c);box-shadow:inset -2px -3px 4px rgba(0,0,0,.2),0 6px 8px -3px var(--c)}
+.chev{color:var(--muted)}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <linearGradient id="pw" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff"/><stop offset=".55" stop-color="#f1eee8"/><stop offset="1" stop-color="#d6d1c6"/></linearGradient>
+  <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 0 0-.1-1.2l2-1.5-2-3.4-2.3.9a7 7 0 0 0-2-1.2L14.2 3h-4l-.4 2.6a7 7 0 0 0-2 1.2l-2.3-.9-2 3.4 2 1.5A7 7 0 0 0 5 12c0 .4 0 .8.1 1.2l-2 1.5 2 3.4 2.3-.9a7 7 0 0 0 2 1.2l.4 2.6h4l.4-2.6a7 7 0 0 0 2-1.2l2.3.9 2-3.4-2-1.5c.1-.4.1-.8.1-1.2z"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="M20 20l-4-4"/></symbol>
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M4 11l8-7 8 7v9H4z"/></symbol>
+  <symbol id="i-cal" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="3"/><path d="M4 10h16M9 3v4M15 3v4"/></symbol>
+  <symbol id="i-list" viewBox="0 0 24 24"><path d="M9 7h11M9 12h11M9 17h11M4.5 7h.01M4.5 12h.01M4.5 17h.01"/></symbol>
+  <symbol id="i-back" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></symbol>
+  <symbol id="i-share" viewBox="0 0 24 24"><path d="M12 15V4M8 8l4-4 4 4M5 13v6h14v-6"/></symbol>
+</defs></svg>
+
+<!-- S1 -->
+<div class="stage"><div class="phone s1" data-tilt>
+  <div class="scene" aria-hidden="true">
+    <svg class="layer torus float" style="--d:-18;right:-100px;top:300px" width="420" height="320" viewBox="0 0 420 320"><g transform="rotate(-24 210 160)">
+      <ellipse cx="210" cy="160" rx="160" ry="120" fill="url(#pw)"/><ellipse cx="210" cy="170" rx="92" ry="66" fill="#d9d4c9" opacity=".85"/>
+      <path d="M70 120C90 50 190 22 280 40" stroke="#fff" stroke-width="10" stroke-linecap="round" fill="none"/></g></svg>
+    <div class="layer sphere float b" style="--d:26;width:74px;height:74px;left:56px;top:480px"></div>
+    <div class="layer sphere gold float" style="--d:40;width:44px;height:44px;right:46px;top:130px"></div>
+  </div>
+  <div class="ui">
+    <div class="status"><span>9:41</span><span>●●● <i></i></span></div>
+    <div class="date">Dienstag, 22 Juni</div>
+    <div class="clock">07:00</div>
+    <div class="idle"><h2>Gerade nichts zu tun</h2><p>Genieß die Pause <span class="check"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg></span></p></div>
+    <button class="card next" data-go=".s3"><span class="tag">Als Nächstes</span><h3>13:30 · Zahnarzt</h3><div class="sub">In 50 min. · 20 min Weg</div>
+      <div class="bar"><b></b></div><div class="leave">Geh um 13:10 los</div></button>
+    <nav class="card tabbar" aria-label="Navigation">
+      <button class="tab on" aria-label="Heute"><svg><use href="#i-home"/></svg></button>
+      <button class="tab" aria-label="Kalender" data-go=".s2"><svg><use href="#i-cal"/></svg></button>
+      <button class="tab" aria-label="Aufgaben"><svg><use href="#i-list"/></svg></button>
+      <button class="tab" aria-label="Einstellungen" data-go=".s4"><svg><use href="#i-gear"/></svg></button>
+    </nav>
+    <div class="home"></div>
+  </div>
+</div></div>
+
+<!-- S2 -->
+<div class="stage"><div class="phone s2" data-tilt>
+  <div class="scene" aria-hidden="true">
+    <div class="layer sphere gold float" style="--d:34;width:40px;height:40px;right:120px;top:84px"></div>
+    <div class="layer sphere float b" style="--d:-20;width:120px;height:120px;left:-44px;top:640px"></div>
+    <svg class="layer torus float b" style="--d:-26;right:-130px;top:540px" width="380" height="280" viewBox="0 0 420 320"><g transform="rotate(-20 210 160)">
+      <ellipse cx="210" cy="160" rx="160" ry="120" fill="url(#pw)"/><ellipse cx="210" cy="170" rx="92" ry="66" fill="#d9d4c9" opacity=".85"/></g></svg>
+  </div>
+  <div class="ui">
+    <div class="status"><span>9:41</span><span>●●● <i></i></span></div>
+    <div class="topbar"><div><small>Dienstag, 22 Juni</small><h1>Heute</h1></div>
+      <div class="btns"><button class="icon" aria-label="Suchen"><svg><use href="#i-search"/></svg></button><button class="icon" aria-label="Einstellungen" data-go=".s4"><svg><use href="#i-gear"/></svg></button></div></div>
+    <div class="chips" role="group" aria-label="Kategorien">
+      <button class="chip" aria-pressed="true">Alle</button>
+      <button class="chip" style="--c:var(--c-health)" aria-pressed="false"><i></i>Gesundheit</button>
+      <button class="chip" style="--c:var(--c-work)" aria-pressed="false"><i></i>Arbeit</button>
+      <button class="chip" style="--c:var(--c-private)" aria-pressed="false"><i></i>Privat</button>
+    </div>
+    <div class="days"><button class="day">Mo<b>21</b></button><button class="day on">Di<b>22</b></button><button class="day">Mi<b>23</b></button><button class="day">Do<b>24</b></button><button class="day">Fr<b>25</b></button></div>
+    <div class="card tl">
+      <div class="row"><span>7:00</span><hr></div><div class="row"><span>8:00</span><hr></div><div class="row"><span>9:00</span><hr></div><div class="row"><span>10:00</span><hr></div>
+      <div class="row"><span>11:00</span><hr></div><div class="row"><span>12:00</span><hr></div><div class="row"><span>13:00</span><hr></div><div class="row"><span>14:00</span><hr></div>
+      <div class="now"><em>7:15</em><i></i></div>
+      <button class="event" data-cat="health" data-go=".s3" style="--c:var(--c-health);top:362px"><b>Zahnarzt</b><small>13:30 · Geh um 13:10 los</small></button>
+      <button class="event" data-cat="work" style="--c:var(--c-work);top:128px"><b>Team-Meeting</b><small>9:30 · 45 min</small></button>
+    </div>
+    <button class="fab" aria-label="Neuer Termin">+</button>
+    <nav class="card tabbar" aria-label="Navigation">
+      <button class="tab" aria-label="Heute" data-go=".s1"><svg><use href="#i-home"/></svg></button>
+      <button class="tab on" aria-label="Kalender"><svg><use href="#i-cal"/></svg></button>
+      <button class="tab" aria-label="Aufgaben"><svg><use href="#i-list"/></svg></button>
+      <button class="tab" aria-label="Einstellungen" data-go=".s4"><svg><use href="#i-gear"/></svg></button>
+    </nav>
+    <div class="home"></div>
+  </div>
+</div></div>
+
+<!-- S3 -->
+<div class="stage"><div class="phone s3" data-tilt>
+  <div class="scene" aria-hidden="true">
+    <svg class="layer torus float" style="--d:-22;right:-150px;top:470px" width="460" height="340" viewBox="0 0 420 320"><g transform="rotate(-28 210 160)">
+      <ellipse cx="210" cy="160" rx="160" ry="120" fill="url(#pw)"/><ellipse cx="210" cy="170" rx="92" ry="66" fill="#d9d4c9" opacity=".85"/>
+      <path d="M70 120C90 50 190 22 280 40" stroke="#fff" stroke-width="10" stroke-linecap="round" fill="none"/></g></svg>
+    <div class="layer sphere float b" style="--d:30;width:84px;height:84px;right:30px;top:690px"></div>
+  </div>
+  <div class="ui">
+    <div class="status"><span>9:41</span><span>●●● <i></i></span></div>
+    <div class="topbar" style="margin-top:14px"><button class="icon" aria-label="Zurück" data-go=".s2"><svg><use href="#i-back"/></svg></button>
+      <button class="icon" aria-label="Teilen"><svg><use href="#i-share"/></svg></button></div>
+    <header><small>Dienstag, 22 Juni</small><h1>Heute <span>Zahnarzt</span>13:30</h1></header>
+    <div class="card route"><p>Damit du es entspannt schaffst</p><div class="go"><u>→</u>Geh um 13:10 los</div><p>20 min. Weg zur Praxis</p></div>
+    <div class="lbl">ORT</div><div class="val">Praxis Dr. Berg · Königstr. 12</div>
+    <div class="lbl">KATEGORIE</div>
+    <div class="seg" role="group" aria-label="Kategorie">
+      <button style="--c:var(--c-health)" aria-pressed="true"><i></i>Gesundheit</button><button style="--c:var(--c-work)" aria-pressed="false"><i></i>Arbeit</button><button style="--c:var(--c-private)" aria-pressed="false"><i></i>Privat</button></div>
+    <div class="lbl">PRIORITÄT</div>
+    <div class="seg" role="group" aria-label="Priorität"><button aria-pressed="false">Normal</button><button aria-pressed="false">Mittel</button><button aria-pressed="true">Wichtig</button></div>
+    <div class="rem"><span>Erinnerung<br><small style="color:var(--muted)">Automatisch · Rechtzeitig</small></span><button class="sw" role="switch" aria-checked="true" aria-label="Erinnerung"></button></div>
+    <div class="actions"><button class="edit">Bearbeiten</button></div>
+    <div class="del" style="margin:-34px 0 40px">Termin entfernen</div>
+    <div class="home"></div>
+  </div>
+</div></div>
+
+<!-- S4 -->
+<div class="stage"><div class="phone s4" data-tilt>
+  <div class="scene" aria-hidden="true">
+    <div class="layer sphere gold float" style="--d:30;width:56px;height:56px;right:36px;top:170px"></div>
+    <div class="layer sphere float b" style="--d:-18;width:100px;height:100px;left:-30px;top:700px"></div>
+  </div>
+  <div class="ui">
+    <div class="status"><span>9:41</span><span>●●● <i></i></span></div>
+    <div class="topbar"><div><small>Anpassen</small><h1>Einstellungen</h1></div></div>
+    <h4>Kategorien</h4>
+    <div class="card group">
+      <div class="set"><span class="cat" style="--c:var(--c-health)"><i></i>Gesundheit</span><span class="chev">›</span></div>
+      <div class="set"><span class="cat" style="--c:var(--c-work)"><i></i>Arbeit</span><span class="chev">›</span></div>
+      <div class="set"><span class="cat" style="--c:var(--c-private)"><i></i>Privat</span><span class="chev">›</span></div>
+      <div class="set"><span class="cat" style="--c:var(--c-travel)"><i></i>Reisen</span><span class="chev">›</span></div>
+      <div class="set" style="color:var(--gold)"><span>+ Neue Kategorie</span></div>
+    </div>
+    <h4>Smart-Funktionen</h4>
+    <div class="card group">
+      <div class="set"><span>Wegzeit automatisch<small>Berechnet, wann du losgehen musst</small></span><button class="sw" role="switch" aria-checked="true" aria-label="Wegzeit"></button></div>
+      <div class="set"><span>Fokus-Modus<small>Stille Zeit vor wichtigen Terminen</small></span><button class="sw" role="switch" aria-checked="false" aria-label="Fokus"></button></div>
+      <div class="set"><span>Wochenstart</span><span class="chev">Montag ›</span></div>
+    </div>
+    <nav class="card tabbar" aria-label="Navigation">
+      <button class="tab" aria-label="Heute" data-go=".s1"><svg><use href="#i-home"/></svg></button>
+      <button class="tab" aria-label="Kalender" data-go=".s2"><svg><use href="#i-cal"/></svg></button>
+      <button class="tab" aria-label="Aufgaben"><svg><use href="#i-list"/></svg></button>
+      <button class="tab on" aria-label="Einstellungen"><svg><use href="#i-gear"/></svg></button>
+    </nav>
+    <div class="home"></div>
+  </div>
+</div></div>
+
+<script>
+document.querySelectorAll('[data-tilt]').forEach(p=>{
+  p.addEventListener('pointermove',e=>{const r=p.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;
+    p.style.setProperty('--ry',x*9+'deg');p.style.setProperty('--rx',-y*7+'deg');p.style.setProperty('--px',x);p.style.setProperty('--py',y)});
+  p.addEventListener('pointerleave',()=>{p.style.setProperty('--ry','0deg');p.style.setProperty('--rx','0deg');p.style.setProperty('--px',0);p.style.setProperty('--py',0)});
+});
+document.querySelectorAll('.seg,.chips').forEach(g=>g.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
+  g.querySelectorAll('button').forEach(o=>o.setAttribute('aria-pressed',o===b));
+  if(g.classList.contains('chips')){const t=b.textContent.trim();
+    document.querySelectorAll('.s2 .event').forEach(ev=>{const m={Gesundheit:'health',Arbeit:'work'}[t];ev.style.opacity=(!m&&t!=='Privat')||ev.dataset.cat===m?1:.18});}
+})));
+document.querySelectorAll('.sw').forEach(s=>s.addEventListener('click',()=>s.setAttribute('aria-checked',s.getAttribute('aria-checked')!=='true')));
+document.querySelectorAll('.day').forEach(d=>d.addEventListener('click',()=>document.querySelectorAll('.day').forEach(o=>o.classList.toggle('on',o===d))));
+document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>document.querySelector(b.dataset.go).scrollIntoView({behavior:'smooth',block:'center',inline:'center'})));
+</script>
+</body>
+</html>
