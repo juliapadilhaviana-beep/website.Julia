@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Anmelden Kalender 3D</title>
+<style>
+:root{ /* Blau (Standard) */
+  --ink:#2f3f5f; --muted:#7f8da8; --line:rgba(95,125,180,.18);
+  --a1:#7b95c6; --a2:#5f7db4; --sh:70,95,150; --err:#c0675a; --ok:#4aa383; --gold:#c4a574;
+  --page1:#fff; --page2:#e3ebf7; --page3:#d5e0f2;
+  --ph1:#ffffff; --ph2:#f1f5fc; --ph3:#dce6f6; --frame1:#cfd9ec; --frame2:#aebcda;
+  --p1:#ffffff; --p2:#eaf0fa; --p3:#b3c6e6; --hole:#c3d3ec; --s1:#f7faff; --s2:#dbe5f6; --s3:#b9cbe8;
+}
+:root[data-theme=rosa]{
+  --ink:#5c3d4c; --muted:#a88b97; --line:rgba(200,120,150,.2);
+  --a1:#eba5ba; --a2:#c9718d; --sh:190,100,130; --gold:#d4a58a;
+  --page2:#fbeaf0; --page3:#f6dbe5;
+  --ph2:#fef5f8; --ph3:#f9e3ea; --frame1:#f4d9e2; --frame2:#e6b9c8;
+  --p2:#fcf0f4; --p3:#efc6d3; --hole:#f2d3dd; --s1:#fffafb; --s2:#fae3ea; --s3:#edc0cf;
+}
+*{box-sizing:border-box;margin:0}
+body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--ink);min-height:100vh;
+  background:radial-gradient(1100px 600px at 50% -10%,var(--page1),var(--page2) 70%,var(--page3));
+  display:flex;flex-wrap:wrap;gap:44px;justify-content:center;align-items:center;padding:48px 16px;transition:background .4s}
+.theme{position:fixed;top:16px;right:16px;z-index:9;display:flex;gap:6px;padding:5px;border-radius:99px;background:rgba(255,255,255,.8);
+  border:1px solid var(--line);box-shadow:0 10px 24px -10px rgba(var(--sh),.4);backdrop-filter:blur(10px)}
+.theme button{padding:8px 16px;border-radius:99px;font-size:13px;color:var(--muted)}
+.theme button[aria-pressed=true]{background:linear-gradient(160deg,var(--a1),var(--a2));color:#fff}
+.stage{perspective:1500px}
+.phone{position:relative;width:402px;height:875px;max-width:calc(100vw - 32px);border-radius:56px;overflow:hidden;
+  background:linear-gradient(170deg,var(--ph1),var(--ph2) 55%,var(--ph3));
+  box-shadow:0 0 0 9px var(--frame1),0 0 0 10px var(--frame2),0 60px 90px -30px rgba(var(--sh),.5),0 30px 40px -24px rgba(var(--sh),.3);
+  transform-style:preserve-3d;transform:rotateY(var(--ry,0deg)) rotateX(var(--rx,0deg));transition:transform .25s ease-out}
+.scene{position:absolute;inset:0;transform-style:preserve-3d;pointer-events:none}
+.layer{position:absolute;transition:transform .25s ease-out;transform:translate3d(calc(var(--px,0)*var(--d)*1px),calc(var(--py,0)*var(--d)*1px),0)}
+.sphere{border-radius:50%;background:radial-gradient(circle at 32% 26%,#fff 0,var(--s1) 25%,var(--s2) 70%,var(--s3) 100%);
+  box-shadow:inset -8px -12px 22px rgba(var(--sh),.25),0 30px 36px -16px rgba(var(--sh),.4)}
+.sphere.gold{background:radial-gradient(circle at 32% 26%,#fff8ee,#ecd5b3 40%,var(--gold) 100%)}
+.torus{filter:drop-shadow(0 34px 26px rgba(var(--sh),.28))}
+.float{animation:float 8s ease-in-out infinite}.float.b{animation-duration:10s;animation-delay:-4s}
+@keyframes float{50%{translate:0 -12px}}
+@media (prefers-reduced-motion:reduce){.float{animation:none}}
+.ui{position:absolute;inset:0;padding:0 24px;display:flex;flex-direction:column;transform:translateZ(40px)}
+.status{display:flex;justify-content:space-between;align-items:center;height:54px;padding:6px 14px 0;font-weight:600;font-size:15px}
+.status i{width:18px;height:10px;border-radius:3px;background:var(--ink);display:inline-block;margin-left:6px}
+.home{position:absolute;bottom:8px;left:50%;translate:-50% 0;width:140px;height:5px;border-radius:9px;background:var(--a2);opacity:.5}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
+button:focus-visible{outline:2px solid var(--a2);outline-offset:2px}
+.card{background:rgba(255,255,255,.8);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid #fff;border-radius:26px;
+  box-shadow:0 30px 50px -24px rgba(var(--sh),.28),0 8px 16px -10px rgba(var(--sh),.12)}
+.logo{width:64px;height:64px;border-radius:50%;margin:34px 0 0;display:grid;place-items:center;color:#fff;
+  background:radial-gradient(circle at 32% 26%,var(--a1),var(--a2) 80%);box-shadow:inset -6px -8px 14px rgba(0,0,0,.14),0 22px 26px -10px rgba(var(--sh),.6)}
+.logo svg{width:28px;height:28px;stroke:#fff;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+h1{font-size:34px;font-weight:600;letter-spacing:-1.2px;margin-top:18px;line-height:1.1}
+h1 span{display:block;color:var(--muted);font-weight:400}
+.lead{font-size:14px;color:var(--muted);margin-top:8px}
+.form{padding:6px 16px;margin-top:20px}
+.field{position:relative;padding:12px 0 10px;border-bottom:1px solid var(--line)}
+.field:last-child{border:0}
+.field label{display:block;font-size:11px;letter-spacing:.08em;color:var(--muted);text-transform:uppercase}
+.field input{width:100%;border:0;background:none;font:inherit;font-size:15px;color:var(--ink);margin-top:4px;padding:2px 36px 2px 0;outline:none}
+.field:focus-within{border-bottom-color:var(--a2)}
+.field:focus-within label{color:var(--a2)}
+.field input::placeholder{color:#b9c0cf;opacity:.8}
+.eye{position:absolute;right:0;top:24px;width:30px;height:30px;color:var(--muted);display:grid;place-items:center}
+.eye svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.hint{font-size:11px;color:var(--err);min-height:14px;margin-top:2px}
+.field.bad label{color:var(--err)}
+.row{display:flex;justify-content:space-between;align-items:center;margin-top:14px;font-size:13px}
+.link{color:var(--a2);font-weight:500}
+.primary{margin-top:18px;width:100%;padding:16px;border-radius:99px;font-weight:600;font-size:15px;color:#fff;
+  background:linear-gradient(160deg,var(--a1),var(--a2));box-shadow:0 22px 28px -12px rgba(var(--sh),.65);transition:.2s}
+.primary:hover{transform:translateY(-3px) translateZ(20px)}
+.primary:disabled{opacity:.55;transform:none;cursor:not-allowed;box-shadow:none}
+.or{display:flex;align-items:center;gap:12px;margin:18px 0 14px;font-size:12px;color:var(--muted)}
+.or::before,.or::after{content:"";flex:1;height:1px;background:var(--line)}
+.social{display:flex;gap:10px}
+.social button{flex:1;padding:13px;border-radius:99px;background:#fff;border:1px solid var(--line);font-size:14px;font-weight:500;
+  display:flex;gap:8px;justify-content:center;align-items:center;box-shadow:0 14px 20px -12px rgba(var(--sh),.35);transition:.2s}
+.social button:hover{transform:translateY(-2px) translateZ(14px)}
+.social svg{width:18px;height:18px}
+.switch{margin-top:auto;margin-bottom:34px;text-align:center;font-size:14px;color:var(--muted)}
+.strength{display:flex;gap:5px;margin-top:8px}.strength i{flex:1;height:4px;border-radius:4px;background:var(--line);transition:.3s}
+.strength i.on{background:linear-gradient(90deg,var(--a1),var(--a2))}
+.strength-t{font-size:11px;color:var(--muted);margin-top:4px}
+.check{display:flex;gap:10px;align-items:flex-start;margin-top:16px;font-size:12px;color:var(--muted);line-height:1.45;text-align:left}
+.check button{flex:none;width:22px;height:22px;border-radius:8px;border:1.5px solid var(--a1);background:#fff;display:grid;place-items:center;margin-top:1px;transition:.2s}
+.check button[aria-checked=true]{background:linear-gradient(160deg,var(--a1),var(--a2));border-color:transparent}
+.check button svg{width:14px;height:14px;stroke:#fff;fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;opacity:0}
+.check button[aria-checked=true] svg{opacity:1}
+.done{position:absolute;inset:0;z-index:5;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px;
+  background:linear-gradient(170deg,var(--ph1),var(--ph3));transform:translateZ(80px)}
+.done.show{display:flex}
+.done .logo{width:84px;height:84px;margin:0}.done .logo svg{width:38px;height:38px}
+.done h2{font-size:26px;margin-top:22px}.done p{color:var(--muted);margin-top:8px;font-size:14px}
+</style>
+</head>
+<body>
+<div class="theme" role="group" aria-label="Farbe"><button data-t="blau" aria-pressed="true">Blau</button><button data-t="rosa" aria-pressed="false">Rosa</button></div>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <linearGradient id="pw" x1="0" y1="0" x2="1" y2="1"><stop offset="0" style="stop-color:var(--p1)"/><stop offset=".55" style="stop-color:var(--p2)"/><stop offset="1" style="stop-color:var(--p3)"/></linearGradient>
+  <symbol id="i-cal" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="3"/><path d="M4 10h16M9 3v4M15 3v4M9 15l2 2 4-4"/></symbol>
+  <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="i-eyeoff" viewBox="0 0 24 24"><path d="M3 3l18 18M10.6 6.1A9.8 9.8 0 0 1 12 6c6.4 0 10 6 10 6a17 17 0 0 1-3.2 3.7M6.5 7.5C3.8 9.3 2 12 2 12s3.6 7 10 7c1.6 0 3-.4 4.2-1M9.9 9.9a3 3 0 0 0 4.2 4.2"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12l5 5 9-10"/></symbol>
+</defs></svg>
+
+<!-- Anmelden -->
+<div class="stage"><div class="phone" data-tilt id="login">
+  <div class="scene" aria-hidden="true">
+    <svg class="layer torus float" style="--d:-20;right:-150px;top:440px" width="440" height="330" viewBox="0 0 420 320"><g transform="rotate(-26 210 160)">
+      <ellipse cx="210" cy="160" rx="160" ry="120" fill="url(#pw)"/><ellipse cx="210" cy="170" rx="92" ry="66" style="fill:var(--hole)"/>
+      <path d="M70 120C90 50 190 22 280 40" stroke="#fff" stroke-width="10" stroke-linecap="round" fill="none"/></g></svg>
+    <div class="layer sphere gold float" style="--d:36;width:44px;height:44px;right:44px;top:120px"></div>
+    <div class="layer sphere float b" style="--d:-18;width:86px;height:86px;left:-20px;top:690px"></div>
+  </div>
+  <div class="ui">
+    <div class="status"><span>9:41</span><span>●●● <i></i></span></div>
+    <div class="logo"><svg><use href="#i-cal"/></svg></div>
+    <h1>Willkommen<span>zurück</span></h1>
+    <p class="lead">Melde dich an und starte entspannt in den Tag.</p>
+    <form class="card form" novalidate>
+      <div class="field"><label for="le">E-Mail</label><input id="le" type="email" autocomplete="email" placeholder="name@beispiel.de"><div class="hint"></div></div>
+      <div class="field"><label for="lp">Passwort</label><input id="lp" type="password" autocomplete="current-password" placeholder="••••••••">
+        <button type="button" class="eye" aria-label="Passwort anzeigen"><svg><use href="#i-eye"/></svg></button></div>
+    </form>
+    <div class="row"><span></span><a class="link" href="#" onclick="return false">Passwort vergessen?</a></div>
+    <button class="primary" id="loginBtn">Anmelden</button>
+    <div class="or">oder</div>
+    <div class="social">
+      <button type="button"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.4 12.6c0-2.3 1.9-3.4 2-3.5-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.1-2.8.9-3.5.9s-1.8-.8-3-.8C6.9 7.4 5.4 8.3 4.7 9.8c-1.6 2.7-.4 6.800 1.100 9 .8 1.100 1.700 2.300 2.900 2.300 1.100 0 1.600-.7 3-.7s1.800.7 3 .7 2-1.100 2.800-2.200c.9-1.300 1.200-2.500 1.300-2.600-.1 0-2.400-.9-2.400-3.700zM14.200 5.900c.6-.8 1.100-1.900.9-3-.9 0-2.100.6-2.700 1.400-.6.700-1.100 1.800-1 2.900 1.100.1 2.100-.5 2.800-1.300z"/></svg>Apple</button>
+      <button type="button"><svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22 12.2c0-.7-.1-1.300-.2-1.900H12v3.600h5.600a4.800 4.800 0 0 1-2.100 3.200v2.600h3.400c2-1.800 3.100-4.500 3.100-7.500z"/><path fill="#34A853" d="M12 22c2.800 0 5.200-.9 6.900-2.500l-3.400-2.600c-.9.600-2.100 1-3.500 1-2.700 0-5-1.800-5.800-4.300H2.700v2.700A10 10 0 0 0 12 22z"/><path fill="#FBBC05" d="M6.200 13.600a6 6 0 0 1 0-3.800V7.100H2.700a10 10 0 0 0 0 9.200z"/><path fill="#EA4335" d="M12 5.900c1.500 0 2.900.5 4 1.600l3-3A10 10 0 0 0 2.700 7.100l3.500 2.700C7 7.700 9.300 5.900 12 5.900z"/></svg>Google</button>
+    </div>
+    <p class="switch">Noch kein Konto? <button class="link" data-go="#signup">Registrieren</button></p>
+    <div class="home"></div>
+    <div class="done" role="status"><div class="logo"><svg><use href="#i-check"/></svg></div><h2>Angemeldet</h2><p>Schön, dass du da bist. Dein Tag wartet.</p></div>
+  </div>
+</div></div>
+
+<!-- Registrierung -->
+<div class="stage"><div class="phone" data-tilt id="signup">
+  <div class="scene" aria-hidden="true">
+    <svg class="layer torus float b" style="--d:-22;right:-170px;top:520px" width="440" height="330" viewBox="0 0 420 320"><g transform="rotate(-18 210 160)">
+      <ellipse cx="210" cy="160" rx="160" ry="120" fill="url(#pw)"/><ellipse cx="210" cy="170" rx="92" ry="66" style="fill:var(--hole)"/></g></svg>
+    <div class="layer sphere gold float" style="--d:30;width:36px;height:36px;right:52px;top:96px"></div>
+    <div class="layer sphere float b" style="--d:-16;width:70px;height:70px;left:-14px;top:740px"></div>
+  </div>
+  <div class="ui">
+    <div class="status"><span>9:41</span><span>●●● <i></i></span></div>
+    <div class="logo" style="margin-top:20px;width:52px;height:52px"><svg style="width:24px;height:24px"><use href="#i-cal"/></svg></div>
+    <h1 style="font-size:32px">Konto<span>erstellen</span></h1>
+    <form class="card form" novalidate style="margin-top:16px">
+      <div class="field"><label for="sn">Name</label><input id="sn" type="text" autocomplete="name" placeholder="Julia Viana"></div>
+      <div class="field"><label for="se">E-Mail</label><input id="se" type="email" autocomplete="email" placeholder="name@beispiel.de"></div>
+      <div class="field"><label for="sp">Passwort</label><input id="sp" type="password" autocomplete="new-password" placeholder="Mindestens 8 Zeichen">
+        <button type="button" class="eye" aria-label="Passwort anzeigen"><svg><use href="#i-eye"/></svg></button>
+        <div class="strength" aria-hidden="true"><i></i><i></i><i></i><i></i></div><div class="strength-t">Passwortstärke</div></div>
+    </form>
+    <div class="check"><button type="button" role="checkbox" aria-checked="false" aria-label="Zustimmung"><svg viewBox="0 0 24 24"><use href="#i-check"/></svg></button>
+      <span>Ich stimme den <a class="link" href="#" onclick="return false">AGB</a> und der <a class="link" href="#" onclick="return false">Datenschutzerklärung</a> zu.</span></div>
+    <button class="primary" id="signBtn" disabled>Konto erstellen</button>
+    <p class="switch" style="margin-top:auto">Schon ein Konto? <button class="link" data-go="#login">Anmelden</button></p>
+    <div class="home"></div>
+    <div class="done" role="status"><div class="logo"><svg><use href="#i-check"/></svg></div><h2>Willkommen!</h2><p>Dein Konto ist bereit. Zeit für einen ruhigen Start.</p></div>
+  </div>
+</div></div>
+
+<script>
+const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
+$$('[data-tilt]').forEach(p=>{
+  p.addEventListener('pointermove',e=>{const r=p.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;
+    p.style.setProperty('--ry',x*9+'deg');p.style.setProperty('--rx',-y*7+'deg');p.style.setProperty('--px',x);p.style.setProperty('--py',y)});
+  p.addEventListener('pointerleave',()=>{['--ry','--rx'].forEach(k=>p.style.setProperty(k,'0deg'));['--px','--py'].forEach(k=>p.style.setProperty(k,0))});
+});
+$$('.theme button').forEach(b=>b.addEventListener('click',()=>{
+  document.documentElement.dataset.theme=b.dataset.t;$$('.theme button').forEach(o=>o.setAttribute('aria-pressed',o===b));}));
+$$('.eye').forEach(b=>b.addEventListener('click',()=>{const i=b.parentNode.querySelector('input'),show=i.type==='password';
+  i.type=show?'text':'password';b.setAttribute('aria-label',show?'Passwort verbergen':'Passwort anzeigen');b.querySelector('use').setAttribute('href',show?'#i-eyeoff':'#i-eye');}));
+$$('[data-go]').forEach(b=>b.addEventListener('click',()=>$(b.dataset.go).scrollIntoView({behavior:'smooth',block:'center',inline:'center'})));
+const mail=v=>/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v);
+// Anmelden
+const le=$('#le'),lp=$('#lp');
+le.addEventListener('blur',()=>{const f=le.closest('.field');const bad=le.value&&!mail(le.value);f.classList.toggle('bad',bad);$('.hint',f).textContent=bad?'Bitte eine gültige E-Mail eingeben.':''});
+$('#loginBtn').addEventListener('click',e=>{e.preventDefault();
+  if(!mail(le.value)||lp.value.length<1){le.dispatchEvent(new Event('blur'));(mail(le.value)?lp:le).focus();return}
+  $('.done',$('#login')).classList.add('show')});
+// Registrierung
+const sn=$('#sn'),se=$('#se'),sp=$('#sp'),cb=$('.check button'),sb=$('#signBtn');
+const score=v=>[v.length>=8,/[a-z]/.test(v)&&/[A-Z]/.test(v),/\d/.test(v),/[^\w\s]/.test(v)||v.length>=12].filter(Boolean).length;
+const upd=()=>{const s=score(sp.value);$$('.strength i').forEach((i,n)=>i.classList.toggle('on',n<s));
+  $('.strength-t').textContent=sp.value?['Zu kurz','Schwach','Okay','Gut','Sehr stark'][s]:'Passwortstärke';
+  sb.disabled=!(sn.value.trim()&&mail(se.value)&&sp.value.length>=8&&cb.getAttribute('aria-checked')==='true')};
+[sn,se,sp].forEach(i=>i.addEventListener('input',upd));
+cb.addEventListener('click',()=>{cb.setAttribute('aria-checked',cb.getAttribute('aria-checked')!=='true');upd()});
+sb.addEventListener('click',e=>{e.preventDefault();$('.done',$('#signup')).classList.add('show')});
+</script>
+</body>
+</html>
