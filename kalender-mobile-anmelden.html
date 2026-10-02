@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Anmelden Mobile Weiss</title>
+<style>
+:root{
+  --ink:#43373d; --muted:#a39a9f; --faint:#e3dce0; --line:rgba(120,95,108,.13);
+  --rose:#ecbccb; --rose2:#d68ea5; --rose-soft:#fbeef2; --ok:#8fbfae; --err:#c0786f;
+  --lo:rgba(170,145,156,.34); --hi:rgba(255,255,255,.95);
+}
+*{box-sizing:border-box;margin:0}
+body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--ink);min-height:100vh;
+  background:radial-gradient(1100px 600px at 50% -10%,#fff,#f6f2f3 70%,#eee8ea);
+  display:flex;flex-wrap:wrap;gap:44px;justify-content:center;align-items:center;padding:48px 16px}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
+button:focus-visible{outline:2px solid var(--rose2);outline-offset:3px}
+.phone{position:relative;width:402px;height:875px;max-width:calc(100vw - 32px);border-radius:52px;overflow:hidden;
+  background:radial-gradient(380px 300px at 100% 0,rgba(226,238,232,.55),transparent 70%),radial-gradient(420px 340px at 0 100%,rgba(244,226,234,.6),transparent 70%),linear-gradient(170deg,#fff,#fcfafa 60%,#f6f1f3);
+  box-shadow:0 0 0 1px #e9e1e4,0 0 0 9px #fff,0 0 0 10px #e6dde1,0 50px 80px -34px rgba(120,95,108,.38),0 24px 34px -24px rgba(120,95,108,.22)}
+.ui{position:absolute;inset:0;padding:0 24px;display:flex;flex-direction:column}
+.status{display:flex;justify-content:space-between;align-items:center;height:54px;padding:6px 14px 0;font-weight:600;font-size:15px}
+.status i{width:18px;height:10px;border-radius:3px;background:var(--ink);display:inline-block;margin-left:6px;opacity:.85}
+.home{position:absolute;bottom:8px;left:50%;translate:-50% 0;width:140px;height:5px;border-radius:9px;background:var(--ink);opacity:.8}
+.bgclock{position:absolute;border-radius:50%;aspect-ratio:1;pointer-events:none;opacity:.62;filter:blur(.8px);
+  background:linear-gradient(145deg,rgba(255,255,255,.95),rgba(243,230,236,.85));
+  box-shadow:20px 26px 56px rgba(190,160,172,.42),-14px -14px 36px rgba(255,255,255,.95),inset 0 0 0 1px rgba(255,255,255,.7)}
+.bgclock svg{position:absolute;inset:0;width:100%;height:100%}
+.tick{stroke:#e0d3d9;stroke-width:2;stroke-linecap:round}.tick.big{stroke:#d3c7cd;stroke-width:2.6}
+.hand{transform-origin:200px 200px}.hand line{stroke:#c9bac2;opacity:.55}
+.orb{position:absolute;border-radius:50%;background:radial-gradient(circle at 32% 26%,#fff 0,#fdfafb 28%,#f1e8ec 70%,#e2d6dc 100%);
+  box-shadow:inset -6px -9px 16px rgba(170,140,152,.18),0 22px 28px -14px rgba(150,120,132,.35);pointer-events:none}
+.orb.rose{background:radial-gradient(circle at 32% 26%,#fff,#fbe3ea 45%,#e9aabd 100%);box-shadow:inset -5px -8px 14px rgba(190,100,130,.25),0 18px 24px -12px rgba(190,100,130,.45)}
+.logo{width:60px;height:60px;border-radius:50%;margin-top:30px;display:grid;place-items:center;background:linear-gradient(145deg,#fff,#f6eff1);
+  box-shadow:10px 12px 26px var(--lo),-6px -6px 14px var(--hi)}
+.logo svg{width:26px;height:26px;stroke:var(--rose2);fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+h1{font-size:36px;font-weight:600;letter-spacing:-1.3px;margin-top:20px;line-height:1.08}
+h1 span{display:block;color:var(--muted);font-weight:400}
+.lead{font-size:14px;color:var(--muted);margin-top:8px}
+form{margin-top:22px;display:flex;flex-direction:column;gap:14px}
+.field{position:relative;padding:11px 18px 10px;border-radius:20px;background:#f7f1f3;box-shadow:inset 4px 4px 10px rgba(170,140,152,.28),inset -4px -4px 10px rgba(255,255,255,.95);transition:.25s}
+.field:focus-within{background:#fff;box-shadow:inset 3px 3px 8px rgba(170,140,152,.22),inset -3px -3px 8px #fff,0 0 0 1.5px var(--rose)}
+.field label{display:block;font-size:11px;letter-spacing:.08em;color:var(--muted);text-transform:uppercase}
+.field:focus-within label{color:var(--rose2)}
+.field input{width:100%;border:0;background:none;font:inherit;font-size:15px;color:var(--ink);margin-top:3px;padding:2px 34px 2px 0;outline:none}
+.field input::placeholder{color:#cdc3c8}
+.field.bad{box-shadow:inset 3px 3px 8px rgba(170,140,152,.22),inset -3px -3px 8px #fff,0 0 0 1.5px var(--err)}.field.bad label{color:var(--err)}
+.eye{position:absolute;right:12px;top:50%;margin-top:-15px;width:30px;height:30px;color:var(--muted);display:grid;place-items:center}
+.eye svg{width:19px;height:19px;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.hint{font-size:11px;color:var(--err);margin:-8px 0 -4px 6px;min-height:0}
+.row{display:flex;justify-content:flex-end;margin-top:14px;font-size:13px}
+.link{color:var(--rose2);font-weight:500}
+.primary{margin-top:18px;width:100%;padding:16px;border-radius:99px;font-weight:600;font-size:15px;color:#fff;
+  background:linear-gradient(135deg,var(--rose),var(--rose2));box-shadow:0 20px 26px -12px rgba(214,142,165,.9),8px 10px 20px rgba(170,145,156,.2);transition:.2s}
+.primary:hover{transform:translateY(-3px)}.primary:disabled{opacity:.5;transform:none;cursor:not-allowed;box-shadow:none}
+.or{display:flex;align-items:center;gap:12px;margin:18px 0 14px;font-size:12px;color:var(--muted)}.or::before,.or::after{content:"";flex:1;height:1px;background:var(--line)}
+.social{display:flex;gap:12px}
+.social button{flex:1;padding:13px;border-radius:99px;background:#fff;font-size:14px;font-weight:500;display:flex;gap:8px;justify-content:center;align-items:center;
+  box-shadow:8px 10px 20px var(--lo),-5px -5px 12px var(--hi);transition:.2s}.social button:hover{transform:translateY(-2px)}
+.social svg{width:18px;height:18px}
+.switch{margin-top:auto;margin-bottom:34px;text-align:center;font-size:14px;color:var(--muted)}
+.strength{display:flex;gap:5px;margin-top:8px}.strength i{flex:1;height:4px;border-radius:4px;background:var(--faint);transition:.3s}.strength i.on{background:linear-gradient(90deg,var(--rose),var(--rose2))}
+.strength-t{font-size:11px;color:var(--muted);margin-top:4px}
+.check{display:flex;gap:10px;align-items:flex-start;margin-top:16px;font-size:12px;color:var(--muted);line-height:1.45}
+.check button{flex:none;width:22px;height:22px;border-radius:8px;background:#f7f1f3;box-shadow:inset 2px 2px 5px rgba(170,140,152,.35),inset -2px -2px 4px #fff;display:grid;place-items:center;margin-top:1px;transition:.2s}
+.check button[aria-checked=true]{background:linear-gradient(135deg,var(--rose),var(--rose2));box-shadow:0 8px 12px -5px var(--rose2)}
+.check button svg{width:13px;height:13px;stroke:#fff;fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;opacity:0}.check button[aria-checked=true] svg{opacity:1}
+.done{position:absolute;inset:0;z-index:5;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px;background:linear-gradient(170deg,#fff,#f8f2f4)}
+.done.show{display:flex}.done .logo{width:84px;height:84px;margin:0}.done .logo svg{width:36px;height:36px}
+.done h2{font-size:26px;margin-top:22px}.done p{color:var(--muted);margin-top:8px;font-size:14px}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <symbol id="i-cal" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="3"/><path d="M4 10h16M9 3v4M15 3v4M9 15l2 2 4-4"/></symbol>
+  <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="i-eyeoff" viewBox="0 0 24 24"><path d="M3 3l18 18M10.6 6.1A9.8 9.8 0 0 1 12 6c6.4 0 10 6 10 6a17 17 0 0 1-3.2 3.7M6.5 7.5C3.8 9.3 2 12 2 12s3.6 7 10 7c1.6 0 3-.4 4.2-1M9.9 9.9a3 3 0 0 0 4.2 4.2"/></symbol>
+  <symbol id="i-ck" viewBox="0 0 24 24"><path d="M5 12l5 5 9-10"/></symbol>
+</defs></svg>
+
+<!-- Anmelden -->
+<div class="phone" id="login">
+  <div class="bgclock" data-clock="7:00" style="width:470px;left:-40px;top:380px"></div>
+  <div class="orb rose" style="width:34px;height:34px;right:46px;top:120px"></div>
+  <div class="orb" style="width:74px;height:74px;right:30px;top:700px"></div>
+  <div class="ui">
+    <div class="status"><span>9:41</span><span>●●● <i></i></span></div>
+    <div class="logo"><svg><use href="#i-cal"/></svg></div>
+    <h1>Willkommen<span>zurück</span></h1>
+    <p class="lead">Melde dich an und starte entspannt in den Tag.</p>
+    <form novalidate>
+      <div class="field"><label for="le">E-Mail</label><input id="le" type="email" autocomplete="email" placeholder="name@beispiel.de"></div>
+      <div class="hint" id="lh"></div>
+      <div class="field"><label for="lp">Passwort</label><input id="lp" type="password" autocomplete="current-password" placeholder="••••••••"><button type="button" class="eye" aria-label="Passwort anzeigen"><svg><use href="#i-eye"/></svg></button></div>
+    </form>
+    <div class="row"><a class="link" href="#" onclick="return false">Passwort vergessen?</a></div>
+    <button class="primary" id="loginBtn">Anmelden</button>
+    <div class="or">oder</div>
+    <div class="social">
+      <button type="button"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.4 12.6c0-2.3 1.9-3.4 2-3.5-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.1-2.8.9-3.5.9s-1.8-.8-3-.8C6.9 7.4 5.4 8.3 4.7 9.8c-1.6 2.7-.4 6.8 1.1 9 .8 1.1 1.7 2.3 2.9 2.3 1.1 0 1.6-.7 3-.7s1.8.7 3 .7 2-1.1 2.8-2.2c.9-1.3 1.2-2.5 1.3-2.6-.1 0-2.4-.9-2.4-3.7zM14.2 5.9c.6-.8 1.1-1.9.9-3-.9 0-2.1.6-2.7 1.4-.6.7-1.1 1.8-1 2.9 1.1.1 2.1-.5 2.8-1.3z"/></svg>Apple</button>
+      <button type="button"><svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22 12.2c0-.7-.1-1.3-.2-1.9H12v3.6h5.6a4.8 4.8 0 0 1-2.1 3.2v2.6h3.4c2-1.8 3.1-4.5 3.1-7.5z"/><path fill="#34A853" d="M12 22c2.8 0 5.2-.9 6.9-2.5l-3.4-2.6c-.9.6-2.1 1-3.5 1-2.7 0-5-1.8-5.8-4.3H2.7v2.7A10 10 0 0 0 12 22z"/><path fill="#FBBC05" d="M6.2 13.6a6 6 0 0 1 0-3.8V7.1H2.7a10 10 0 0 0 0 9.2z"/><path fill="#EA4335" d="M12 5.9c1.5 0 2.9.5 4 1.6l3-3A10 10 0 0 0 2.7 7.1l3.5 2.7C7 7.7 9.3 5.9 12 5.9z"/></svg>Google</button>
+    </div>
+    <p class="switch">Noch kein Konto? <button class="link" data-go="#signup">Registrieren</button></p>
+    <div class="home"></div>
+    <div class="done" role="status"><div class="logo"><svg><use href="#i-ck"/></svg></div><h2>Angemeldet</h2><p>Schön, dass du da bist. Dein Tag wartet.</p></div>
+  </div>
+</div>
+
+<!-- Registrierung -->
+<div class="phone" id="signup">
+  <div class="bgclock" data-clock="9:30" style="width:460px;left:-30px;top:430px"></div>
+  <div class="orb rose" style="width:30px;height:30px;right:52px;top:110px"></div>
+  <div class="orb" style="width:64px;height:64px;left:-14px;top:740px"></div>
+  <div class="ui">
+    <div class="status"><span>9:41</span><span>●●● <i></i></span></div>
+    <div class="logo" style="margin-top:22px;width:52px;height:52px"><svg style="width:23px;height:23px"><use href="#i-cal"/></svg></div>
+    <h1 style="font-size:32px;margin-top:16px">Konto<span>erstellen</span></h1>
+    <form novalidate style="margin-top:18px">
+      <div class="field"><label for="sn">Name</label><input id="sn" type="text" autocomplete="name" placeholder="Julia Viana"></div>
+      <div class="field"><label for="se">E-Mail</label><input id="se" type="email" autocomplete="email" placeholder="name@beispiel.de"></div>
+      <div class="field"><label for="sp">Passwort</label><input id="sp" type="password" autocomplete="new-password" placeholder="Mindestens 8 Zeichen"><button type="button" class="eye" aria-label="Passwort anzeigen" style="top:34px"><svg><use href="#i-eye"/></svg></button>
+        <div class="strength" aria-hidden="true"><i></i><i></i><i></i><i></i></div><div class="strength-t">Passwortstärke</div></div>
+    </form>
+    <div class="check"><button type="button" role="checkbox" aria-checked="false" aria-label="Zustimmung"><svg viewBox="0 0 24 24"><use href="#i-ck"/></svg></button>
+      <span>Ich stimme den <a class="link" href="#" onclick="return false">AGB</a> und der <a class="link" href="#" onclick="return false">Datenschutzerklärung</a> zu.</span></div>
+    <button class="primary" id="signBtn" disabled>Konto erstellen</button>
+    <p class="switch">Schon ein Konto? <button class="link" data-go="#login">Anmelden</button></p>
+    <div class="home"></div>
+    <div class="done" role="status"><div class="logo"><svg><use href="#i-ck"/></svg></div><h2>Willkommen!</h2><p>Dein Konto ist bereit. Zeit für einen ruhigen Start.</p></div>
+  </div>
+</div>
+
+<script>
+const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
+const pt=(d,r)=>[200+Math.sin(d*Math.PI/180)*r,200-Math.cos(d*Math.PI/180)*r];
+$$('[data-clock]').forEach(e=>{const[h,m]=e.dataset.clock.split(':').map(Number);let t='';
+  for(let i=0;i<12;i++){const big=i%3===0,[a,b]=pt(i*30,big?170:176),[c,d]=pt(i*30,188);t+=`<line class="tick ${big?'big':''}" x1="${a}" y1="${b}" x2="${c}" y2="${d}"/>`}
+  t+=`<g class="hand" style="transform:rotate(${((h%12)+m/60)*30}deg)"><line x1="200" y1="200" x2="200" y2="118" stroke-width="5" stroke-linecap="round"/></g><g class="hand" style="transform:rotate(${m*6}deg)"><line x1="200" y1="200" x2="200" y2="66" stroke-width="3.2" stroke-linecap="round"/></g><circle cx="200" cy="200" r="7" fill="#c9bac2" opacity=".6"/>`;
+  e.innerHTML=`<svg viewBox="0 0 400 400" aria-hidden="true">${t}</svg>`});
+$$('.eye').forEach(b=>b.addEventListener('click',()=>{const i=b.parentNode.querySelector('input'),s=i.type==='password';i.type=s?'text':'password';
+  b.setAttribute('aria-label',s?'Passwort verbergen':'Passwort anzeigen');b.querySelector('use').setAttribute('href',s?'#i-eyeoff':'#i-eye')}));
+$$('[data-go]').forEach(b=>b.addEventListener('click',()=>$(b.dataset.go).scrollIntoView({behavior:'smooth',block:'center',inline:'center'})));
+const mail=v=>/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v);
+const le=$('#le'),lp=$('#lp');
+le.addEventListener('blur',()=>{const bad=le.value&&!mail(le.value);le.closest('.field').classList.toggle('bad',bad);$('#lh').textContent=bad?'Bitte eine gültige E-Mail eingeben.':''});
+$('#loginBtn').addEventListener('click',e=>{e.preventDefault();if(!mail(le.value)||!lp.value){le.dispatchEvent(new Event('blur'));(mail(le.value)?lp:le).focus();return}$('.done',$('#login')).classList.add('show')});
+const sn=$('#sn'),se=$('#se'),sp=$('#sp'),cb=$('.check button'),sb=$('#signBtn');
+const score=v=>[v.length>=8,/[a-z]/.test(v)&&/[A-Z]/.test(v),/\d/.test(v),/[^\w\s]/.test(v)||v.length>=12].filter(Boolean).length;
+const upd=()=>{const s=score(sp.value);$$('.strength i').forEach((i,n)=>i.classList.toggle('on',n<s));
+  $('.strength-t').textContent=sp.value?['Zu kurz','Schwach','Okay','Gut','Sehr stark'][s]:'Passwortstärke';
+  sb.disabled=!(sn.value.trim()&&mail(se.value)&&sp.value.length>=8&&cb.getAttribute('aria-checked')==='true')};
+[sn,se,sp].forEach(i=>i.addEventListener('input',upd));
+cb.addEventListener('click',()=>{cb.setAttribute('aria-checked',cb.getAttribute('aria-checked')!=='true');upd()});
+sb.addEventListener('click',e=>{e.preventDefault();$('.done',$('#signup')).classList.add('show')});
+</script>
+</body>
+</html>
