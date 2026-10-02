@@ -6,53 +6,53 @@
 <title>Anmelden Mobile Weiss</title>
 <style>
 :root{
-  --ink:#43373d; --muted:#a39a9f; --faint:#e3dce0; --line:rgba(120,95,108,.13);
-  --rose:#ecbccb; --rose2:#d68ea5; --rose-soft:#fbeef2; --ok:#8fbfae; --err:#c0786f;
-  --lo:rgba(170,145,156,.34); --hi:rgba(255,255,255,.95);
+  --ink:#000000; --muted:#76767c; --faint:#e4e4e8; --line:rgba(0,0,0,.08);
+  --rose:#a9c1e6; --rose2:#5f7fb8; --rose-soft:#eaf1fb; --ok:#8fbfae; --err:#c0786f;
+  --lo:rgba(110,120,145,.28); --hi:rgba(255,255,255,.95);
 }
 *{box-sizing:border-box;margin:0}
 body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--ink);min-height:100vh;
-  background:radial-gradient(1100px 600px at 50% -10%,#fff,#f6f2f3 70%,#eee8ea);
+  background:radial-gradient(1100px 600px at 50% -10%,#fff,#f4f4f6 70%,#ececef);
   display:flex;flex-wrap:wrap;gap:44px;justify-content:center;align-items:center;padding:48px 16px}
 button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
 button:focus-visible{outline:2px solid var(--rose2);outline-offset:3px}
 .phone{position:relative;width:402px;height:875px;max-width:calc(100vw - 32px);border-radius:52px;overflow:hidden;
-  background:radial-gradient(380px 300px at 100% 0,rgba(226,238,232,.55),transparent 70%),radial-gradient(420px 340px at 0 100%,rgba(244,226,234,.6),transparent 70%),linear-gradient(170deg,#fff,#fcfafa 60%,#f6f1f3);
-  box-shadow:0 0 0 1px #e9e1e4,0 0 0 9px #fff,0 0 0 10px #e6dde1,0 50px 80px -34px rgba(120,95,108,.38),0 24px 34px -24px rgba(120,95,108,.22)}
+  background:radial-gradient(380px 300px at 100% 0,rgba(226,238,232,.55),transparent 70%),radial-gradient(420px 340px at 0 100%,rgba(232,238,248,.6),transparent 70%),linear-gradient(170deg,#fff,#fbfbfc 60%,#f3f3f6);
+  box-shadow:0 0 0 1px #e6e6ea,0 0 0 9px #fff,0 0 0 10px #e0e0e5,0 50px 80px -34px rgba(0,0,0,.38),0 24px 34px -24px rgba(0,0,0,.22)}
 .ui{position:absolute;inset:0;padding:0 24px;display:flex;flex-direction:column}
 .status{display:flex;justify-content:space-between;align-items:center;height:54px;padding:6px 14px 0;font-weight:600;font-size:15px}
 .status i{width:18px;height:10px;border-radius:3px;background:var(--ink);display:inline-block;margin-left:6px;opacity:.85}
 .home{position:absolute;bottom:8px;left:50%;translate:-50% 0;width:140px;height:5px;border-radius:9px;background:var(--ink);opacity:.8}
 .bgclock{position:absolute;border-radius:50%;aspect-ratio:1;pointer-events:none;opacity:.62;filter:blur(.8px);
-  background:linear-gradient(145deg,rgba(255,255,255,.95),rgba(243,230,236,.85));
-  box-shadow:20px 26px 56px rgba(190,160,172,.42),-14px -14px 36px rgba(255,255,255,.95),inset 0 0 0 1px rgba(255,255,255,.7)}
+  background:linear-gradient(145deg,rgba(255,255,255,.95),rgba(238,240,246,.85));
+  box-shadow:20px 26px 56px rgba(140,150,175,.42),-14px -14px 36px rgba(255,255,255,.95),inset 0 0 0 1px rgba(255,255,255,.7)}
 .bgclock svg{position:absolute;inset:0;width:100%;height:100%}
-.tick{stroke:#e0d3d9;stroke-width:2;stroke-linecap:round}.tick.big{stroke:#d3c7cd;stroke-width:2.6}
-.hand{transform-origin:200px 200px}.hand line{stroke:#c9bac2;opacity:.55}
-.orb{position:absolute;border-radius:50%;background:radial-gradient(circle at 32% 26%,#fff 0,#fdfafb 28%,#f1e8ec 70%,#e2d6dc 100%);
-  box-shadow:inset -6px -9px 16px rgba(170,140,152,.18),0 22px 28px -14px rgba(150,120,132,.35);pointer-events:none}
-.orb.rose{background:radial-gradient(circle at 32% 26%,#fff,#fbe3ea 45%,#e9aabd 100%);box-shadow:inset -5px -8px 14px rgba(190,100,130,.25),0 18px 24px -12px rgba(190,100,130,.45)}
-.logo{width:60px;height:60px;border-radius:50%;margin-top:30px;display:grid;place-items:center;background:linear-gradient(145deg,#fff,#f6eff1);
+.tick{stroke:#dcdce1;stroke-width:2;stroke-linecap:round}.tick.big{stroke:#cdcdd3;stroke-width:2.6}
+.hand{transform-origin:200px 200px}.hand line{stroke:#bcbcc3;opacity:.55}
+.orb{position:absolute;border-radius:50%;background:radial-gradient(circle at 32% 26%,#fff 0,#fbfbfc 28%,#eeeef2 70%,#dcdce3 100%);
+  box-shadow:inset -6px -9px 16px rgba(120,130,155,.18),0 22px 28px -14px rgba(110,120,145,.35);pointer-events:none}
+.orb.rose{background:radial-gradient(circle at 32% 26%,#fff,#e6eefb 45%,#9db8e0 100%);box-shadow:inset -5px -8px 14px rgba(80,110,170,.25),0 18px 24px -12px rgba(80,110,170,.4)}
+.logo{width:60px;height:60px;border-radius:50%;margin-top:30px;display:grid;place-items:center;background:linear-gradient(145deg,#fff,#f5f5f8);
   box-shadow:10px 12px 26px var(--lo),-6px -6px 14px var(--hi)}
 .logo svg{width:26px;height:26px;stroke:var(--rose2);fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
 h1{font-size:36px;font-weight:600;letter-spacing:-1.3px;margin-top:20px;line-height:1.08}
 h1 span{display:block;color:var(--muted);font-weight:400}
 .lead{font-size:14px;color:var(--muted);margin-top:8px}
 form{margin-top:22px;display:flex;flex-direction:column;gap:14px}
-.field{position:relative;padding:11px 18px 10px;border-radius:20px;background:#f7f1f3;box-shadow:inset 4px 4px 10px rgba(170,140,152,.28),inset -4px -4px 10px rgba(255,255,255,.95);transition:.25s}
-.field:focus-within{background:#fff;box-shadow:inset 3px 3px 8px rgba(170,140,152,.22),inset -3px -3px 8px #fff,0 0 0 1.5px var(--rose)}
+.field{position:relative;padding:11px 18px 10px;border-radius:20px;background:#f6f6f8;box-shadow:inset 4px 4px 10px rgba(120,130,155,.28),inset -4px -4px 10px rgba(255,255,255,.95);transition:.25s}
+.field:focus-within{background:#fff;box-shadow:inset 3px 3px 8px rgba(120,130,155,.22),inset -3px -3px 8px #fff,0 0 0 1.5px var(--rose)}
 .field label{display:block;font-size:11px;letter-spacing:.08em;color:var(--muted);text-transform:uppercase}
 .field:focus-within label{color:var(--rose2)}
 .field input{width:100%;border:0;background:none;font:inherit;font-size:15px;color:var(--ink);margin-top:3px;padding:2px 34px 2px 0;outline:none}
 .field input::placeholder{color:#cdc3c8}
-.field.bad{box-shadow:inset 3px 3px 8px rgba(170,140,152,.22),inset -3px -3px 8px #fff,0 0 0 1.5px var(--err)}.field.bad label{color:var(--err)}
+.field.bad{box-shadow:inset 3px 3px 8px rgba(120,130,155,.22),inset -3px -3px 8px #fff,0 0 0 1.5px var(--err)}.field.bad label{color:var(--err)}
 .eye{position:absolute;right:12px;top:50%;margin-top:-15px;width:30px;height:30px;color:var(--muted);display:grid;place-items:center}
 .eye svg{width:19px;height:19px;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
 .hint{font-size:11px;color:var(--err);margin:-8px 0 -4px 6px;min-height:0}
 .row{display:flex;justify-content:flex-end;margin-top:14px;font-size:13px}
 .link{color:var(--rose2);font-weight:500}
 .primary{margin-top:18px;width:100%;padding:16px;border-radius:99px;font-weight:600;font-size:15px;color:#fff;
-  background:linear-gradient(135deg,var(--rose),var(--rose2));box-shadow:0 20px 26px -12px rgba(214,142,165,.9),8px 10px 20px rgba(170,145,156,.2);transition:.2s}
+  background:linear-gradient(135deg,var(--rose),var(--rose2));box-shadow:0 20px 26px -12px rgba(95,127,184,.8),8px 10px 20px rgba(110,120,145,.2);transition:.2s}
 .primary:hover{transform:translateY(-3px)}.primary:disabled{opacity:.5;transform:none;cursor:not-allowed;box-shadow:none}
 .or{display:flex;align-items:center;gap:12px;margin:18px 0 14px;font-size:12px;color:var(--muted)}.or::before,.or::after{content:"";flex:1;height:1px;background:var(--line)}
 .social{display:flex;gap:12px}
@@ -63,10 +63,10 @@ form{margin-top:22px;display:flex;flex-direction:column;gap:14px}
 .strength{display:flex;gap:5px;margin-top:8px}.strength i{flex:1;height:4px;border-radius:4px;background:var(--faint);transition:.3s}.strength i.on{background:linear-gradient(90deg,var(--rose),var(--rose2))}
 .strength-t{font-size:11px;color:var(--muted);margin-top:4px}
 .check{display:flex;gap:10px;align-items:flex-start;margin-top:16px;font-size:12px;color:var(--muted);line-height:1.45}
-.check button{flex:none;width:22px;height:22px;border-radius:8px;background:#f7f1f3;box-shadow:inset 2px 2px 5px rgba(170,140,152,.35),inset -2px -2px 4px #fff;display:grid;place-items:center;margin-top:1px;transition:.2s}
+.check button{flex:none;width:22px;height:22px;border-radius:8px;background:#f6f6f8;box-shadow:inset 2px 2px 5px rgba(120,130,155,.35),inset -2px -2px 4px #fff;display:grid;place-items:center;margin-top:1px;transition:.2s}
 .check button[aria-checked=true]{background:linear-gradient(135deg,var(--rose),var(--rose2));box-shadow:0 8px 12px -5px var(--rose2)}
 .check button svg{width:13px;height:13px;stroke:#fff;fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;opacity:0}.check button[aria-checked=true] svg{opacity:1}
-.done{position:absolute;inset:0;z-index:5;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px;background:linear-gradient(170deg,#fff,#f8f2f4)}
+.done{position:absolute;inset:0;z-index:5;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px;background:linear-gradient(170deg,#fff,#f6f6f8)}
 .done.show{display:flex}.done .logo{width:84px;height:84px;margin:0}.done .logo svg{width:36px;height:36px}
 .done h2{font-size:26px;margin-top:22px}.done p{color:var(--muted);margin-top:8px;font-size:14px}
 </style>
@@ -136,7 +136,7 @@ const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelecto
 const pt=(d,r)=>[200+Math.sin(d*Math.PI/180)*r,200-Math.cos(d*Math.PI/180)*r];
 $$('[data-clock]').forEach(e=>{const[h,m]=e.dataset.clock.split(':').map(Number);let t='';
   for(let i=0;i<12;i++){const big=i%3===0,[a,b]=pt(i*30,big?170:176),[c,d]=pt(i*30,188);t+=`<line class="tick ${big?'big':''}" x1="${a}" y1="${b}" x2="${c}" y2="${d}"/>`}
-  t+=`<g class="hand" style="transform:rotate(${((h%12)+m/60)*30}deg)"><line x1="200" y1="200" x2="200" y2="118" stroke-width="5" stroke-linecap="round"/></g><g class="hand" style="transform:rotate(${m*6}deg)"><line x1="200" y1="200" x2="200" y2="66" stroke-width="3.2" stroke-linecap="round"/></g><circle cx="200" cy="200" r="7" fill="#c9bac2" opacity=".6"/>`;
+  t+=`<g class="hand" style="transform:rotate(${((h%12)+m/60)*30}deg)"><line x1="200" y1="200" x2="200" y2="118" stroke-width="5" stroke-linecap="round"/></g><g class="hand" style="transform:rotate(${m*6}deg)"><line x1="200" y1="200" x2="200" y2="66" stroke-width="3.2" stroke-linecap="round"/></g><circle cx="200" cy="200" r="7" fill="#bcbcc3" opacity=".6"/>`;
   e.innerHTML=`<svg viewBox="0 0 400 400" aria-hidden="true">${t}</svg>`});
 $$('.eye').forEach(b=>b.addEventListener('click',()=>{const i=b.parentNode.querySelector('input'),s=i.type==='password';i.type=s?'text':'password';
   b.setAttribute('aria-label',s?'Passwort verbergen':'Passwort anzeigen');b.querySelector('use').setAttribute('href',s?'#i-eyeoff':'#i-eye')}));
