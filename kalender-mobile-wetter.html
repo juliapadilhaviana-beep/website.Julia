@@ -1,0 +1,426 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Kalender Wetter</title>
+<style>
+:root{--rose:var(--acc);--rose2:var(--acc2)}
+*{box-sizing:border-box;margin:0}
+body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--ink);min-height:100vh;padding-top:84px;
+  background:radial-gradient(1100px 600px at 50% -10%,var(--pg0),var(--pg1) 70%,var(--pg2));
+  display:flex;flex-wrap:wrap;gap:56px;justify-content:center;align-items:center;padding-bottom:48px;padding-left:16px;padding-right:16px}
+button,select{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--acc2);outline-offset:3px}
+.device{position:relative;padding:0}
+.phone{position:relative;width:402px;height:875px;max-width:calc(100vw - 32px);border-radius:52px;overflow:hidden;--px:0;--py:0;background:var(--skyB);
+  box-shadow:0 0 0 11px #0b0b0d,0 0 0 12.5px #4a4a52,0 0 0 14px #17171a,0 0 0 15px #5d5d66,0 60px 90px -30px rgba(0,0,0,.55),0 30px 40px -22px rgba(0,0,0,.4)}
+.island{position:absolute;top:11px;left:50%;translate:-50% 0;width:118px;height:34px;border-radius:20px;background:#000;z-index:30;pointer-events:none}
+.island::after{content:"";position:absolute;right:14px;top:50%;margin-top:-6px;width:12px;height:12px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#2a3550,#07080d 70%);box-shadow:0 0 0 2px #0b0b10}
+.btn{position:absolute;width:4px;border-radius:2px;background:linear-gradient(90deg,#2b2b31,#55555e);z-index:0}
+.btn.l1{left:-18px;top:150px;height:30px}.btn.l2{left:-18px;top:215px;height:58px}.btn.l3{left:-18px;top:287px;height:58px}.btn.r1{right:-18px;top:240px;height:92px;background:linear-gradient(270deg,#2b2b31,#55555e)}
+.sicons{display:block}
+.ui{position:absolute;inset:0;padding:0 24px;display:flex;flex-direction:column}
+.status{display:flex;justify-content:space-between;align-items:center;height:54px;padding:6px 14px 0;font-weight:600;font-size:15px}
+.status i{width:18px;height:10px;border-radius:3px;background:var(--ink);display:inline-block;margin-left:6px;opacity:.85}
+.home{position:absolute;bottom:8px;left:50%;translate:-50% 0;width:140px;height:5px;border-radius:9px;background:var(--ink);opacity:.8}
+/* ---------- Himmel ---------- */
+.skyw{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.sky{position:absolute;inset:0;background:linear-gradient(180deg,var(--skyT),var(--skyB))}
+.dusk{position:absolute;inset:0;background:radial-gradient(130% 55% at 50% 100%,rgba(255,170,120,.6),transparent 70%);opacity:var(--dusk,0)}
+.stars{position:absolute;inset:0;opacity:var(--stars,0)}
+.stars span{position:absolute;border-radius:50%;background:#fff;animation:tw 3.5s ease-in-out infinite}
+@keyframes tw{50%{opacity:.25;transform:scale(.7)}}
+.sun,.moon{position:absolute;right:44px;top:104px;border-radius:50%}
+.s3 .sun,.s3 .moon{top:146px;right:34px}.s4 .sun,.s4 .moon{top:130px;right:22px}.s5 .sun,.s5 .moon,.s6 .sun,.s6 .moon{top:112px;right:38px}
+.sun{width:64px;height:64px;opacity:var(--sun,0);background:radial-gradient(circle,#fffdf3 0,#fff1c9 45%,rgba(255,236,170,0) 72%);box-shadow:0 0 70px 24px rgba(255,236,170,.55)}
+.moon{width:50px;height:50px;opacity:var(--moon,0);background:radial-gradient(circle at 35% 30%,#fff,#e6eaff 55%,#aab6e6 100%);box-shadow:0 0 50px 14px rgba(190,205,255,.35),inset -8px -6px 14px rgba(110,125,190,.45)}
+.clouds{position:absolute;inset:0;opacity:var(--clouds,0)}
+.clouds i{position:absolute;width:290px;height:96px;border-radius:50%;background:var(--cloud);filter:blur(22px);animation:drift 70s linear infinite alternate}
+.clouds i:nth-child(1){top:7%;left:-80px}.clouds i:nth-child(2){top:26%;left:120px;animation-duration:90s;width:320px}.clouds i:nth-child(3){top:46%;left:-120px;animation-duration:110s;opacity:.7}
+@keyframes drift{to{transform:translateX(160px)}}
+.rain{position:absolute;inset:0;opacity:var(--rain,0)}
+.rain i{position:absolute;top:-40px;width:1.5px;height:26px;background:linear-gradient(transparent,rgba(190,205,230,.75));animation:fall .9s linear infinite}
+@keyframes fall{to{transform:translateY(960px)}}
+[data-wx=snow] .rain i{width:5px;height:5px;border-radius:50%;background:#fff;animation:snow 7s linear infinite;box-shadow:0 0 6px #fff}
+@keyframes snow{to{transform:translate(30px,960px)}}
+@media (prefers-reduced-motion:reduce){.rain i,.clouds i,.stars span{animation:none}}
+/* ---------- Hintergrund-Uhr ---------- */
+.bgclock{position:absolute;border-radius:50%;aspect-ratio:1;pointer-events:none;opacity:.62;filter:blur(.8px);
+  background:linear-gradient(145deg,var(--clk1),var(--clk2));
+  box-shadow:20px 26px 56px var(--lo),-14px -14px 36px var(--hi),inset 0 0 0 1px var(--hi);
+  transition:transform .35s ease-out;transform:translate(calc(var(--px)*-16px),calc(var(--py)*-16px)) perspective(900px) rotateY(calc(var(--px)*-8deg)) rotateX(calc(var(--py)*7deg));animation:clockIn 1.4s cubic-bezier(.2,.8,.2,1) backwards}
+.bgclock svg,.big svg{position:absolute;inset:0;width:100%;height:100%}
+.tick{stroke:var(--tick);stroke-width:2;stroke-linecap:round}.tick.big{stroke-width:2.6}
+.hand{transform-origin:200px 200px}
+.bgclock .hand line{stroke:var(--hand)!important;opacity:.7}.bgclock circle{fill:var(--hand)!important}
+.orb{position:absolute;border-radius:50%;background:radial-gradient(circle at 32% 26%,var(--o1) 0,var(--o2) 45%,var(--o3) 100%);
+  box-shadow:inset -6px -9px 16px rgba(0,0,0,.08),0 22px 28px -14px var(--lo);pointer-events:none;transition:transform .35s ease-out;transform:translate(calc(var(--px)*26px),calc(var(--py)*26px))}
+.orb.acc{background:radial-gradient(circle at 32% 26%,#fff,var(--acc) 55%,var(--acc2) 100%)}
+@keyframes clockIn{from{opacity:0;scale:.9}to{opacity:.62;scale:1}}
+@keyframes rise{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+.ui>*:not(.home),.tl .h,.tl .ev,.tl .now{animation:rise .8s cubic-bezier(.2,.8,.2,1) backwards;animation-delay:calc(var(--i,0)*85ms + 200ms)}
+@media (prefers-reduced-motion:reduce){.bgclock,.ui>*,.tl>*{animation:none!important}.bgclock,.orb{transition:none}}
+/* ---------- Bausteine ---------- */
+.glass{background:var(--glass);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid var(--edge);border-radius:26px;box-shadow:12px 16px 36px var(--lo),-6px -6px 16px var(--hi)}
+.tag{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:99px;font-size:12px;background:color-mix(in srgb,var(--acc) 24%,transparent);color:var(--accink)}
+.tag::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--acc2)}
+.round{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;flex:none;background:var(--surf);box-shadow:6px 8px 16px var(--lo),-5px -5px 12px var(--hi);transition:.25s}
+.round:hover{transform:translateY(-2px)}
+.round svg{width:19px;height:19px;stroke:var(--ink);fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.muted{color:var(--muted)}
+.wx{align-self:center;margin-top:8px;display:flex;gap:8px;align-items:center;padding:6px 14px;border-radius:99px;font-size:12px;color:var(--muted);background:var(--surf);box-shadow:5px 6px 14px var(--lo),-4px -4px 10px var(--hi)}
+/* S1 */
+.s1 .date{margin-top:42px;text-align:center;font-size:15px;color:var(--muted);letter-spacing:.04em}
+.s1 .clock{text-align:center;font-weight:800;font-size:92px;letter-spacing:-4px;line-height:1.05;text-shadow:0 18px 26px var(--lo)}
+.s1 .idle{text-align:center;margin-top:10px}.s1 .idle h2{font-size:23px;font-weight:600}
+.s1 .idle p{display:flex;gap:8px;justify-content:center;align-items:center;margin-top:6px;color:var(--muted);font-size:15px}
+.chk{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(145deg,#bfe0d3,#8fbfae);box-shadow:0 8px 12px -5px rgba(110,170,150,.7)}
+.chk svg{width:13px;height:13px;stroke:#fff;fill:none;stroke-width:3.5;stroke-linecap:round;stroke-linejoin:round}
+.next{margin-top:auto;margin-bottom:44px;padding:18px;text-align:left;width:100%;transition:.2s}.next:hover{transform:translateY(-4px)}
+.next h3{font-weight:500;font-size:24px;margin:12px 0 4px}.next .sub{font-size:13px;color:var(--muted)}
+.bar{height:4px;border-radius:9px;background:var(--line);margin:14px 0 8px}.bar b{display:block;height:100%;width:62%;border-radius:9px;background:linear-gradient(90deg,var(--acc),var(--acc2))}
+.leave{font-size:13px;font-weight:600}
+/* S2 */
+.head{margin-top:26px}.head small{font-size:15px;color:var(--muted)}.head div{display:flex;align-items:center;gap:12px;margin-top:2px}
+.head h1{font-size:38px;font-weight:600;letter-spacing:-1.2px}
+.pillw{padding:5px 12px;border-radius:99px;font-size:12px;background:var(--surf);box-shadow:3px 4px 10px var(--lo),-3px -3px 8px var(--hi);color:var(--muted)}
+.tl{position:absolute;left:0;right:0;top:196px;height:640px}.tl .axis{position:absolute;left:84px;top:0;bottom:0;width:1.5px;background:var(--faint)}
+.tl .h{position:absolute;left:0;right:24px;height:0}.tl .h span{position:absolute;left:24px;top:-8px;width:46px;text-align:right;font-size:12px;color:var(--muted)}
+.tl .h i{position:absolute;left:79.5px;top:-5px;width:11px;height:11px;border-radius:50%;background:var(--surf);box-shadow:inset 1.5px 1.5px 3px var(--lo)}
+.tl .h hr{position:absolute;left:96px;right:0;border:0;height:1px;background:var(--line)}
+.now{position:absolute;left:18px;right:24px;display:flex;align-items:center;gap:8px}
+.now em{font-style:normal;font-size:11px;font-weight:600;color:#fff;background:linear-gradient(135deg,var(--acc),var(--acc2));border-radius:8px;padding:3px 7px}
+.now i{flex:1;height:1.5px;background:linear-gradient(90deg,var(--acc2),transparent)}
+.ev{position:absolute;left:104px;right:24px;height:52px;padding:8px 14px 8px 18px;border-radius:18px;text-align:left;font-size:13px;background:var(--surf);border:1px solid var(--edge);box-shadow:10px 14px 28px var(--lo),-5px -5px 12px var(--hi);transition:.2s}
+.ev::before{content:"";position:absolute;left:8px;top:12px;bottom:12px;width:3px;border-radius:3px;background:var(--c,var(--acc2))}
+.ev:hover{transform:translateX(-3px)}.ev b{display:block;font-weight:600}.ev small{color:var(--muted)}
+/* S3 */
+.s3 .head{margin-top:24px}.s3 h1{font-size:44px;line-height:1.04;font-weight:600;letter-spacing:-1.6px;margin-top:4px}.s3 h1 span{display:block;color:var(--muted);font-weight:400}
+.route{padding:14px 16px;margin:18px 0;text-align:center}.route p{font-size:12px;color:var(--muted)}
+.go{display:flex;align-items:center;gap:10px;margin:8px auto;padding:6px 18px 6px 6px;border-radius:99px;background:var(--surf);width:fit-content;font-size:15px;box-shadow:8px 10px 20px var(--lo),-4px -4px 10px var(--hi)}
+.go u{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff;display:grid;place-items:center;text-decoration:none}
+.lbl{font-size:12px;color:var(--muted);margin-top:14px;letter-spacing:.06em}.val{font-size:14px;font-weight:500;margin-top:2px}
+.seg{display:flex;gap:8px;margin-top:8px}.seg button{padding:8px 16px;border-radius:99px;font-size:13px;background:var(--surf);box-shadow:3px 4px 10px var(--lo),-3px -3px 8px var(--hi);transition:.2s}
+.seg button[aria-pressed=true]{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff}
+.rem{display:flex;justify-content:space-between;align-items:center;margin-top:16px;padding-top:14px;border-top:1px solid var(--line);font-size:13px}
+.sw{width:50px;height:30px;border-radius:99px;background:var(--swoff);position:relative;box-shadow:inset 2px 2px 6px var(--lo);transition:.25s;flex:none}
+.sw::after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;box-shadow:2px 4px 8px rgba(0,0,0,.3);transition:.25s}
+.sw[aria-checked=true]{background:linear-gradient(135deg,var(--acc),var(--acc2))}.sw[aria-checked=true]::after{left:23px}
+.acts{margin-top:auto;margin-bottom:40px;text-align:center}
+.edit{width:100%;padding:15px;border-radius:99px;font-weight:600;background:var(--surf);box-shadow:10px 14px 28px var(--lo),-6px -6px 14px var(--hi);transition:.2s}.edit:hover{transform:translateY(-3px)}
+.del{margin-top:14px;font-size:12px;color:#d2786e}
+/* S4 */
+.s4 .bar4{display:flex;align-items:center;justify-content:space-between;margin-top:20px}
+.s4 h1{font-size:26px;font-weight:600;letter-spacing:-.6px;white-space:nowrap}.s4 h1 span{color:var(--faint);margin-left:8px;font-weight:500}
+.fokus{display:flex;align-items:center;gap:8px;padding:4px 12px 4px 4px;border-radius:99px;font-size:12px;color:var(--muted);background:var(--surf);box-shadow:4px 5px 12px var(--lo),-4px -4px 10px var(--hi)}
+.fokus i{width:32px;height:20px;border-radius:99px;background:var(--swoff);position:relative;box-shadow:inset 2px 2px 4px var(--lo);transition:.3s}
+.fokus i::after{content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:1px 2px 4px rgba(0,0,0,.3);transition:.3s}
+.fokus[aria-pressed=true] i{background:linear-gradient(135deg,var(--acc),var(--acc2))}.fokus[aria-pressed=true] i::after{left:14px}
+.big{position:relative;margin:26px auto 0;width:330px;aspect-ratio:1;border-radius:50%;background:linear-gradient(145deg,var(--surf),var(--field));box-shadow:16px 20px 44px var(--lo),-12px -12px 32px var(--hi);transition:.6s}
+.cap{text-align:center;margin-top:16px;font-size:12px;color:var(--muted)}.cap b{display:block;font-size:24px;font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums}
+.todo{margin-top:auto;margin-bottom:38px;padding:12px 16px 8px;transition:.5s}
+.todo h3{font-size:11px;font-weight:500;color:var(--muted);letter-spacing:.07em;text-transform:uppercase;display:flex;justify-content:space-between;margin-bottom:2px}
+.todo ul{list-style:none;padding:0}.todo li{display:flex;gap:10px;align-items:flex-start;padding:8px 0;font-size:13px;border-bottom:1px solid var(--line)}.todo li:last-child{border:0}
+.box{flex:none;width:18px;height:18px;border-radius:6px;margin-top:1px;background:var(--field);box-shadow:inset 1.5px 1.5px 4px var(--lo);display:grid;place-items:center}
+.box svg{width:11px;height:11px;stroke:#fff;fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;opacity:0}
+li[data-d=true] .box{background:linear-gradient(135deg,var(--acc),var(--acc2))}li[data-d=true] .box svg{opacity:1}li[data-d=true] span{color:var(--muted);text-decoration:line-through}
+.todo small{display:block;color:var(--acc2);font-size:11px}
+.s4.focus .todo{opacity:0;pointer-events:none;transform:translateY(10px)}.s4.focus .big{transform:scale(1.1)}
+.sheet{position:absolute;inset:0;z-index:20;background:var(--skyB)}
+/* Steuerung */
+.ctl{position:fixed;left:50%;top:12px;translate:-50% 0;z-index:50;display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:10px 14px;padding:9px 16px;border-radius:24px;max-width:calc(100vw - 20px);
+  background:var(--surf);backdrop-filter:blur(12px);box-shadow:8px 10px 24px var(--lo),-4px -4px 10px var(--hi);font-size:12px;color:var(--muted)}
+.ctl b{color:var(--ink);font-variant-numeric:tabular-nums;min-width:42px;display:inline-block}
+.ctl input[type=range]{width:170px;accent-color:var(--acc2)}
+.ctl button,.ctl select{padding:5px 12px;border-radius:99px;font-size:12px;background:color-mix(in srgb,var(--muted) 16%,transparent);color:var(--ink)}
+.ctl button.on{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff}
+.ctl select option{color:#000}
+
+/* Anmelden / Registrierung */
+.logo{width:60px;height:60px;border-radius:50%;margin-top:30px;display:grid;place-items:center;background:var(--surf);box-shadow:10px 12px 26px var(--lo),-6px -6px 14px var(--hi)}
+.logo svg{width:26px;height:26px;stroke:var(--acc2);fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.auth h1{font-size:36px;font-weight:600;letter-spacing:-1.3px;margin-top:20px;line-height:1.08}.auth h1 span{display:block;color:var(--muted);font-weight:400}
+.lead{font-size:14px;color:var(--muted);margin-top:8px}
+.auth form{margin-top:22px;display:flex;flex-direction:column;gap:14px}
+.field{position:relative;padding:11px 18px 10px;border-radius:20px;background:var(--field);box-shadow:inset 4px 4px 10px var(--lo),inset -4px -4px 10px var(--hi);transition:.25s}
+.field:focus-within{box-shadow:inset 3px 3px 8px var(--lo),inset -3px -3px 8px var(--hi),0 0 0 1.5px var(--acc)}
+.field label{display:block;font-size:11px;letter-spacing:.08em;color:var(--muted);text-transform:uppercase}.field:focus-within label{color:var(--acc2)}
+.field input{width:100%;border:0;background:none;font:inherit;font-size:15px;color:var(--ink);margin-top:3px;padding:2px 34px 2px 0;outline:none}
+.field input::placeholder{color:var(--muted);opacity:.55}
+.field.bad{box-shadow:inset 3px 3px 8px var(--lo),inset -3px -3px 8px var(--hi),0 0 0 1.5px #d2786e}.field.bad label{color:#d2786e}
+.eye{position:absolute;right:12px;top:50%;margin-top:-15px;width:30px;height:30px;color:var(--muted);display:grid;place-items:center}
+.eye svg{width:19px;height:19px;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.hint{font-size:11px;color:#d2786e;margin:-8px 0 -4px 6px}
+.arow{display:flex;justify-content:flex-end;margin-top:14px;font-size:13px}
+.link{color:var(--acc2);font-weight:500}
+.primary{margin-top:18px;width:100%;padding:16px;border-radius:99px;font-weight:600;font-size:15px;color:#fff;background:linear-gradient(135deg,var(--acc),var(--acc2));box-shadow:0 20px 26px -12px var(--acc2);transition:.2s}
+.primary:hover{transform:translateY(-3px)}.primary:disabled{opacity:.45;transform:none;cursor:not-allowed;box-shadow:none}
+.or{display:flex;align-items:center;gap:12px;margin:18px 0 14px;font-size:12px;color:var(--muted)}.or::before,.or::after{content:"";flex:1;height:1px;background:var(--line)}
+.social{display:flex;gap:12px}.social button{flex:1;padding:13px;border-radius:99px;background:var(--surf);font-size:14px;font-weight:500;display:flex;gap:8px;justify-content:center;align-items:center;box-shadow:8px 10px 20px var(--lo),-5px -5px 12px var(--hi);transition:.2s}
+.social button:hover{transform:translateY(-2px)}.social svg{width:18px;height:18px}
+.switch{margin-top:auto;margin-bottom:34px;text-align:center;font-size:14px;color:var(--muted)}
+.strength{display:flex;gap:5px;margin-top:8px}.strength i{flex:1;height:4px;border-radius:4px;background:var(--faint);transition:.3s}.strength i.on{background:linear-gradient(90deg,var(--acc),var(--acc2))}
+.strength-t{font-size:11px;color:var(--muted);margin-top:4px}
+.check{display:flex;gap:10px;align-items:flex-start;margin-top:16px;font-size:12px;color:var(--muted);line-height:1.45}
+.check button{flex:none;width:22px;height:22px;border-radius:8px;background:var(--field);box-shadow:inset 2px 2px 5px var(--lo),inset -2px -2px 4px var(--hi);display:grid;place-items:center;margin-top:1px;transition:.2s}
+.check button[aria-checked=true]{background:linear-gradient(135deg,var(--acc),var(--acc2))}
+.check button svg{width:13px;height:13px;stroke:#fff;fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;opacity:0}.check button[aria-checked=true] svg{opacity:1}
+.done{position:absolute;inset:0;z-index:5;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px;background:var(--skyB)}
+.done.show{display:flex}.done .logo{width:84px;height:84px;margin:0}.done .logo svg{width:36px;height:36px}.done h2{font-size:26px;margin-top:22px}.done p{color:var(--muted);margin-top:8px;font-size:14px}
+</style>
+</head>
+<body data-wx="clear">
+<div class="ctl" role="group" aria-label="Tageszeit und Wetter">
+  <span>Tageszeit</span><input id="rng" type="range" min="0" max="24" step=".25" aria-label="Uhrzeit"><b id="ctlT">--:--</b><button id="live" class="on">Live</button>
+  <span>Wetter</span><select id="wsel" aria-label="Wetter"><option value="auto">Auto (Hamburg)</option><option value="clear">Klar</option><option value="cloudy">Wolkig</option><option value="rain">Regen</option><option value="snow">Schnee</option></select>
+  <button id="geo" title="Wetter deines Standorts laden">Standort</button>
+</div>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <symbol id="i-back" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></symbol>
+  <symbol id="i-share" viewBox="0 0 24 24"><path d="M12 15V4M8 8l4-4 4 4M5 13v6h14v-6"/></symbol>
+  <symbol id="i-cal" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="3"/><path d="M4 10h16M9 3v4M15 3v4"/></symbol>
+  <symbol id="i-ck" viewBox="0 0 24 24"><path d="M5 12l5 5 9-10"/></symbol>
+  <symbol id="i-cal2" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="3"/><path d="M4 10h16M9 3v4M15 3v4M9 15l2 2 4-4"/></symbol>
+  <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="i-eyeoff" viewBox="0 0 24 24"><path d="M3 3l18 18M10.6 6.1A9.8 9.8 0 0 1 12 6c6.4 0 10 6 10 6a17 17 0 0 1-3.2 3.7M6.5 7.5C3.8 9.3 2 12 2 12s3.6 7 10 7c1.6 0 3-.4 4.2-1M9.9 9.9a3 3 0 0 0 4.2 4.2"/></symbol>
+</defs></svg>
+
+<div class="phone s1">
+  <div class="bgclock" data-clock style="width:430px;left:-14px;top:150px"></div>
+  <div class="orb" style="width:70px;height:70px;left:48px;top:520px"></div>
+  <div class="ui">
+    <div class="status"><span>9:41</span><span>●●● <i></i></span></div>
+    <div class="wx" id="wx">–</div>
+    <div class="date">Dienstag, 22 Juni</div>
+    <div class="clock" id="s1t">07:00</div>
+    <div class="idle"><h2 id="idleT">Gerade nichts zu tun</h2><p id="idleS">Genieß die Pause <span class="chk"><svg><use href="#i-ck"/></svg></span></p></div>
+    <button class="glass next" data-sheet><span class="tag">Als Nächstes</span><h3>13:30 · Zahnarzt</h3><div class="sub">In 50 min. · 20 min Weg</div>
+      <div class="bar"><b></b></div><div class="leave">Geh um 13:10 los</div></button>
+    <div class="home"></div>
+  </div>
+</div>
+
+<div class="phone s2">
+  <div class="bgclock" data-clock style="width:470px;left:150px;top:470px"></div>
+  <div class="orb" style="width:96px;height:96px;left:-34px;top:690px"></div>
+  <div class="ui">
+    <div class="status"><span>9:41</span><span>●●● <i></i></span></div>
+    <div class="head"><small>Dienstag, 22 Juni</small><div><h1>Heute</h1><span class="pillw">3 Erinnerungen</span></div></div>
+    <div class="tl" id="tl"><div class="axis"></div></div>
+    <div class="home"></div>
+  </div>
+</div>
+
+<div class="phone s3" id="s3">
+  <div class="bgclock" data-clock style="width:450px;left:110px;top:440px"></div>
+  <div class="orb" style="width:84px;height:84px;right:28px;top:690px"></div>
+  <div class="ui">
+    <div class="status"><span>9:41</span><span>●●● <i></i></span></div>
+    <div style="display:flex;justify-content:space-between;margin-top:14px">
+      <button class="round" aria-label="Zurück" data-go=".s2"><svg><use href="#i-back"/></svg></button>
+      <button class="round" aria-label="Teilen"><svg><use href="#i-share"/></svg></button></div>
+    <div class="head"><small>Dienstag, 22 Juni</small><h1>Heute <span>Zahnarzt</span>13:30</h1></div>
+    <div class="glass route"><p>Damit du es entspannt schaffst</p><div class="go"><u>→</u>Geh um 13:10 los</div><p>20 min. Weg zur Praxis</p></div>
+    <div class="lbl">ORT</div><div class="val">Praxis Dr. Berg · Königstr. 12</div>
+    <div class="lbl">PRIORITÄT</div>
+    <div class="seg" role="group" aria-label="Priorität"><button aria-pressed="false">Normal</button><button aria-pressed="false">Mittel</button><button aria-pressed="true">Wichtig</button></div>
+    <div class="rem"><span>Erinnerung<br><small class="muted">Automatisch · Rechtzeitig</small></span><button class="sw" role="switch" aria-checked="true" aria-label="Erinnerung"></button></div>
+    <div class="acts"><button class="edit">Bearbeiten</button><div class="del">Termin entfernen</div></div>
+    <div class="home"></div>
+  </div>
+</div>
+
+<div class="phone s4" id="s4">
+  <div class="orb acc" style="width:28px;height:28px;right:30px;top:420px"></div>
+  <div class="ui">
+    <div class="status"><span>9:41</span><span>●●● <i></i></span></div>
+    <div class="bar4"><div style="display:flex;align-items:center;gap:12px"><button class="round" aria-label="Kalender"><svg><use href="#i-cal"/></svg></button><h1 id="t4">Freitag<span>02.10</span></h1></div>
+      <button class="fokus" id="fk" aria-pressed="false"><i></i>Fokus</button></div>
+    <div class="big" id="big"></div>
+    <div class="cap"><b id="dig">--:--</b><span id="nxt"></span></div>
+    <section class="glass todo" aria-label="Heute"><h3><span>Heute</span><span id="cnt"></span></h3><ul id="ul"></ul></section>
+    <div class="home"></div>
+  </div>
+</div>
+
+<div class="phone s5 auth" id="login">
+  <div class="bgclock" data-clock style="width:470px;left:-40px;top:400px"></div>
+  <div class="orb acc" style="width:34px;height:34px;left:46px;top:640px"></div>
+  <div class="orb" style="width:74px;height:74px;right:30px;top:700px"></div>
+  <div class="ui">
+    <div class="status"><span>9:41</span><span></span></div>
+    <div class="logo"><svg><use href="#i-cal2"/></svg></div>
+    <h1>Willkommen<span>zurück</span></h1>
+    <p class="lead">Melde dich an und starte entspannt in den Tag.</p>
+    <form novalidate>
+      <div class="field"><label for="le">E-Mail</label><input id="le" type="email" autocomplete="email" placeholder="name@beispiel.de"></div>
+      <div class="hint" id="lh"></div>
+      <div class="field"><label for="lp">Passwort</label><input id="lp" type="password" autocomplete="current-password" placeholder="••••••••"><button type="button" class="eye" aria-label="Passwort anzeigen"><svg><use href="#i-eye"/></svg></button></div>
+    </form>
+    <div class="arow"><a class="link" href="#" onclick="return false">Passwort vergessen?</a></div>
+    <button class="primary" id="loginBtn">Anmelden</button>
+    <div class="or">oder</div>
+    <div class="social">
+      <button type="button"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.4 12.6c0-2.3 1.9-3.4 2-3.5-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.1-2.8.9-3.5.9s-1.8-.8-3-.8C6.9 7.4 5.4 8.3 4.7 9.8c-1.6 2.7-.4 6.8 1.1 9 .8 1.1 1.7 2.3 2.9 2.3 1.1 0 1.6-.7 3-.7s1.8.7 3 .7 2-1.1 2.8-2.2c.9-1.3 1.2-2.5 1.3-2.6-.1 0-2.4-.9-2.4-3.7zM14.2 5.9c.6-.8 1.1-1.9.9-3-.9 0-2.1.6-2.7 1.4-.6.7-1.1 1.8-1 2.9 1.1.1 2.1-.5 2.8-1.3z"/></svg>Apple</button>
+      <button type="button"><svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22 12.2c0-.7-.1-1.3-.2-1.9H12v3.6h5.6a4.8 4.8 0 0 1-2.1 3.2v2.6h3.4c2-1.8 3.100-4.500 3.100-7.500z"/><path fill="#34A853" d="M12 22c2.8 0 5.2-.9 6.9-2.5l-3.4-2.6c-.9.6-2.1 1-3.5 1-2.7 0-5-1.8-5.8-4.3H2.7v2.7A10 10 0 0 0 12 22z"/><path fill="#FBBC05" d="M6.2 13.6a6 6 0 0 1 0-3.8V7.1H2.7a10 10 0 0 0 0 9.2z"/><path fill="#EA4335" d="M12 5.9c1.5 0 2.9.5 4 1.6l3-3A10 10 0 0 0 2.7 7.1l3.5 2.7C7 7.7 9.3 5.9 12 5.9z"/></svg>Google</button>
+    </div>
+    <p class="switch">Noch kein Konto? <button class="link" data-go="#signup">Registrieren</button></p>
+    <div class="home"></div>
+    <div class="done" role="status"><div class="logo"><svg><use href="#i-ck"/></svg></div><h2>Angemeldet</h2><p>Schön, dass du da bist. Dein Tag wartet.</p></div>
+  </div>
+</div>
+
+<div class="phone s6 auth" id="signup">
+  <div class="bgclock" data-clock style="width:460px;left:-30px;top:440px"></div>
+  <div class="orb acc" style="width:30px;height:30px;right:52px;top:760px"></div>
+  <div class="orb" style="width:64px;height:64px;left:-14px;top:740px"></div>
+  <div class="ui">
+    <div class="status"><span>9:41</span><span></span></div>
+    <div class="logo" style="margin-top:22px;width:52px;height:52px"><svg style="width:23px;height:23px"><use href="#i-cal2"/></svg></div>
+    <h1 style="font-size:32px;margin-top:16px">Konto<span>erstellen</span></h1>
+    <form novalidate style="margin-top:18px">
+      <div class="field"><label for="sn">Name</label><input id="sn" type="text" autocomplete="name" placeholder="Julia Viana"></div>
+      <div class="field"><label for="se">E-Mail</label><input id="se" type="email" autocomplete="email" placeholder="name@beispiel.de"></div>
+      <div class="field"><label for="sp">Passwort</label><input id="sp" type="password" autocomplete="new-password" placeholder="Mindestens 8 Zeichen"><button type="button" class="eye" aria-label="Passwort anzeigen" style="top:34px"><svg><use href="#i-eye"/></svg></button>
+        <div class="strength" aria-hidden="true"><i></i><i></i><i></i><i></i></div><div class="strength-t">Passwortstärke</div></div>
+    </form>
+    <div class="check"><button type="button" role="checkbox" aria-checked="false" aria-label="Zustimmung"><svg viewBox="0 0 24 24"><use href="#i-ck"/></svg></button>
+      <span>Ich stimme den <a class="link" href="#" onclick="return false">AGB</a> und der <a class="link" href="#" onclick="return false">Datenschutzerklärung</a> zu.</span></div>
+    <button class="primary" id="signBtn" disabled>Konto erstellen</button>
+    <p class="switch">Schon ein Konto? <button class="link" data-go="#login">Anmelden</button></p>
+    <div class="home"></div>
+    <div class="done" role="status"><div class="logo"><svg><use href="#i-ck"/></svg></div><h2>Willkommen!</h2><p>Dein Konto ist bereit. Zeit für einen ruhigen Start.</p></div>
+  </div>
+</div>
+
+<script>
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const pad=n=>String(n).padStart(2,'0'),pt=(deg,r)=>[200+Math.sin(deg*Math.PI/180)*r,200-Math.cos(deg*Math.PI/180)*r];
+const params=new URLSearchParams(location.search);
+let manual=null;if(params.get('zeit')){const[h,m]=params.get('zeit').split(':').map(Number);manual=h+m/60}
+const now=()=>{const d=new Date();if(manual!==null)d.setHours(Math.floor(manual),Math.round((manual%1)*60),0,0);return d};
+
+/* ---------- Farben ---------- */
+const P=s=>{if(s[0]==='#'){const n=parseInt(s.slice(1),16);return[n>>16&255,n>>8&255,n&255,1]}const m=s.match(/[\d.]+/g).map(Number);return[m[0],m[1],m[2],m[3]===undefined?1:m[3]]};
+const mix=(a,b,t)=>{const A=P(a),B=P(b);return`rgba(${A.map((v,i)=>i<3?Math.round(v+(B[i]-v)*t):+(v+(B[i]-v)*t).toFixed(3)).join(',')})`};
+const TOK={ // [Tag, Nacht]
+ faint:['#e4e4e8','#3a4262'],line:['rgba(0,0,0,.08)','rgba(255,255,255,.13)'],surf:['rgba(255,255,255,.92)','rgba(46,56,98,.88)'],field:['#f4f4f7','#232b4e'],
+ glass:['rgba(255,255,255,.74)','rgba(34,42,78,.62)'],edge:['rgba(255,255,255,1)','rgba(255,255,255,.14)'],lo:['rgba(110,120,145,.28)','rgba(0,0,12,.5)'],hi:['rgba(255,255,255,.95)','rgba(255,255,255,.05)'],
+ clk1:['rgba(255,255,255,.95)','rgba(78,92,150,.55)'],clk2:['rgba(238,240,246,.85)','rgba(40,48,92,.5)'],tick:['#dcdce1','rgba(255,255,255,.3)'],hand:['#bcbcc3','rgba(255,255,255,.45)'],
+ ring:['#ffffff','#0e1330'],ring2:['#e6e6ea','#2a3358'],pg0:['#ffffff','#1a2148'],pg1:['#f4f4f6','#0a0e24'],pg2:['#ececef','#05071a'],
+ o1:['#ffffff','#7886c4'],o2:['#eeeef2','#4a5890'],o3:['#dcdce3','#2c3566'],acc:['#a9c1e6','#8fb0f2'],acc2:['#5f7fb8','#6f8fe0'],accink:['#3d5a8c','#bcd0ff'],swoff:['#e2e2e8','#3a4262']};
+const FLIP={ink:['#000000','#f4f6ff'],muted:['#76767c','#a7aec8']};
+const names=[...Object.keys(TOK),...Object.keys(FLIP)];
+names.forEach(n=>{try{CSS.registerProperty({name:'--'+n,syntax:'<color>',inherits:true,initialValue:'#000'})}catch(e){}});
+document.documentElement.style.transition=names.map(n=>`--${n} 1.6s ease`).join(',');
+const SKY={ // Tag[oben,unten], Nacht[oben,unten]
+ clear:[['#d6e6fa','#fbfcff'],['#070c26','#26305e']],cloudy:[['#c6ccd7','#eef0f4'],['#171c34','#353d5c']],
+ rain:[['#9aa5b8','#d3d8e1'],['#0e1525','#2a3449']],snow:[['#dbe3ec','#f6f8fb'],['#1b2340','#3a4468']]};
+const WF={clear:{stars:1,sun:1,moon:1,clouds:.1,rain:0,dusk:1},cloudy:{stars:.22,sun:.07,moon:.3,clouds:1,rain:0,dusk:.5},rain:{stars:0,sun:0,moon:0,clouds:1,rain:1,dusk:.35},snow:{stars:.12,sun:.06,moon:.25,clouds:.85,rain:1,dusk:.45}};
+const WN={clear:'Klar',cloudy:'Wolkig',rain:'Regen',snow:'Schnee'};
+let wxAuto={w:'clear',t:null,place:'Hamburg',sr:6.5,ss:20,demo:true},wxMode='auto';
+if(params.get('wx')){wxMode=params.get('wx');$('#wsel').value=wxMode}
+const smooth=x=>x*x*(3-2*x);
+function darkness(h,sr,ss){if(h<sr-1||h>ss+1)return 1;if(h>=sr+1&&h<=ss-1)return 0;return h<sr+1?smooth((sr+1-h)/2):smooth((h-(ss-1))/2)}
+function applySky(h){
+  const w=wxMode==='auto'?wxAuto.w:wxMode,d=darkness(h,wxAuto.sr,wxAuto.ss),f=WF[w],R=document.documentElement.style,S=SKY[w];
+  for(const k in TOK)R.setProperty('--'+k,mix(TOK[k][0],TOK[k][1],d));
+  for(const k in FLIP)R.setProperty('--'+k,FLIP[k][d>.55?1:0]);
+  R.setProperty('--skyT',mix(S[0][0],S[1][0],d));R.setProperty('--skyB',mix(S[0][1],S[1][1],d));
+  R.setProperty('--dusk',(4*d*(1-d)*f.dusk).toFixed(3));R.setProperty('--stars',(Math.pow(d,1.6)*f.stars).toFixed(3));
+  R.setProperty('--sun',((1-d)*f.sun).toFixed(3));R.setProperty('--moon',(d*f.moon).toFixed(3));
+  R.setProperty('--clouds',f.clouds);R.setProperty('--rain',f.rain);R.setProperty('--cloud',mix('rgba(255,255,255,.85)','rgba(120,130,175,.4)',d));
+  document.body.dataset.wx=w;
+  const night=d>.55,label=w==='clear'&&night?'Sternenklar':WN[w];
+  $('#wx').textContent=`${w==='clear'?(night?'☾':'☀'):w==='cloudy'?'☁':w==='rain'?'☂':'❄'}  ${wxAuto.t!==null&&wxMode==='auto'?Math.round(wxAuto.t)+'° · ':''}${label}${wxMode==='auto'?' · '+wxAuto.place+(wxAuto.demo?' (Demo)':''):''}`;
+}
+
+/* ---------- iPhone-Rahmen ---------- */
+const SI='<svg class="sicons" width="68" height="14" viewBox="0 0 68 14" aria-hidden="true"><g fill="currentColor"><rect x="0" y="9" width="3" height="4" rx="1"/><rect x="5" y="6" width="3" height="7" rx="1"/><rect x="10" y="3" width="3" height="10" rx="1"/><rect x="15" y="0" width="3" height="13" rx="1"/></g><path d="M25 5a8 8 0 0 1 12 0M27.5 8a5 5 0 0 1 7 0" stroke="currentColor" fill="none" stroke-width="1.8" stroke-linecap="round"/><circle cx="31" cy="11.5" r="1.4" fill="currentColor"/><rect x="44" y="1" width="20" height="11" rx="3.5" stroke="currentColor" opacity=".45" fill="none"/><rect x="46" y="3" width="14" height="7" rx="2" fill="currentColor"/><rect x="65.5" y="4.5" width="1.5" height="4" rx=".7" fill="currentColor" opacity=".5"/></svg>';
+$$('.status span:last-child').forEach(e=>e.innerHTML=SI);
+$$('.phone').forEach(p=>{const dv=document.createElement('div');dv.className='device';p.replaceWith(dv);dv.appendChild(p);
+  ['l1','l2','l3','r1'].forEach(c=>{const b=document.createElement('i');b.className='btn '+c;dv.appendChild(b)});
+  const isl=document.createElement('div');isl.className='island';isl.setAttribute('aria-hidden','true');p.appendChild(isl)});
+/* ---------- Himmel aufbauen ---------- */
+const rnd=(a,b)=>a+Math.random()*(b-a);
+function sky(){let st='';for(let i=0;i<54;i++){const s=rnd(1,2.6);st+=`<span style="left:${rnd(2,98)}%;top:${rnd(1,64)}%;width:${s}px;height:${s}px;animation-delay:${rnd(0,3.5)}s;opacity:${rnd(.5,1)}"></span>`}
+  let rn='';for(let i=0;i<40;i++)rn+=`<i style="left:${rnd(0,100)}%;animation-delay:${-rnd(0,7)}s;animation-duration:${rnd(.7,1.1)}s;opacity:${rnd(.4,1)}"></i>`;
+  const w=document.createElement('div');w.className='skyw';w.setAttribute('aria-hidden','true');
+  w.innerHTML=`<div class="sky"></div><div class="dusk"></div><div class="stars">${st}</div><div class="sun"></div><div class="moon"></div><div class="clouds"><i></i><i></i><i></i></div><div class="rain">${rn}</div>`;return w}
+$$('.phone').forEach(p=>p.prepend(sky()));
+/* ---------- Uhren ---------- */
+function build(el,sec){let t='';for(let i=0;i<12;i++){const big=i%3===0,[a,b]=pt(i*30,big?170:176),[c,d]=pt(i*30,188);t+=`<line class="tick ${big?'big':''}" x1="${a}" y1="${b}" x2="${c}" y2="${d}"/>`}
+  t+=`<g class="arc"></g><g class="hand"><line x1="200" y1="200" x2="200" y2="118" stroke="var(--ink)" stroke-width="5" stroke-linecap="round"/></g><g class="hand"><line x1="200" y1="200" x2="200" y2="66" stroke="var(--ink)" stroke-width="3.2" stroke-linecap="round"/></g>`+
+  (sec?`<g class="hand"><line x1="200" y1="222" x2="200" y2="58" stroke="var(--acc2)" stroke-width="1.8" stroke-linecap="round"/></g>`:'')+`<circle cx="200" cy="200" r="7" fill="var(--ink)"/><circle cx="200" cy="200" r="2.6" fill="var(--acc2)"/>`;
+  el.innerHTML=`<svg viewBox="0 0 400 400" aria-hidden="true">${t}</svg>`}
+$$('[data-clock]').forEach(e=>build(e,true));build($('#big'),true);
+const A=[{h:9,m:30,t:'Team-Meeting'},{h:13,m:30,t:'Zahnarzt'}];
+function tick(){const d=now(),s=manual!==null?0:d.getSeconds(),mi=d.getMinutes()+s/60,h=(d.getHours()%12)+mi/60,hr=d.getHours()+d.getMinutes()/60;
+  $$('[data-clock],#big').forEach(el=>{const hs=el.querySelectorAll('.hand');if(!hs[0])return;hs[0].style.transform=`rotate(${h*30}deg)`;hs[1].style.transform=`rotate(${mi*6}deg)`;if(hs[2])hs[2].style.transform=`rotate(${s*6}deg)`});
+  const hm=pad(d.getHours())+':'+pad(d.getMinutes());$('#dig').textContent=hm;$('#s1t').textContent=hm;$('#ctlT').textContent=hm;
+  if(manual===null)$('#rng').value=hr;applySky(hr);
+  const mins=d.getHours()*60+d.getMinutes(),nx=A.find(a=>a.h*60+a.m>mins),arc=$('#big .arc');
+  if(nx){const df=nx.h*60+nx.m-mins,hh=Math.floor(df/60);$('#nxt').textContent=`${nx.t} · in ${hh?hh+' Std. ':''}${df%60} Min.`;
+    const a0=h*30,a1=((nx.h%12)+nx.m/60)*30,e=a1<a0?a1+360:a1,[x0,y0]=pt(a0,156),[x1,y1]=pt(e,156);
+    arc.innerHTML=`<path d="M${x0} ${y0} A156 156 0 ${e-a0>180?1:0} 1 ${x1} ${y1}" fill="none" stroke="var(--acc)" stroke-width="5" stroke-linecap="round" opacity=".9"/><circle cx="${x1}" cy="${y1}" r="7" fill="var(--surf)" stroke="var(--acc2)" stroke-width="3"/>`;
+  }else{arc.innerHTML='';$('#nxt').textContent='Heute nichts mehr – genieß die Pause'}
+  const late=hr>=21||hr<5;$('#idleT').textContent=late?'Gute Nacht':'Gerade nichts zu tun';}
+/* ---------- Wetter (Open-Meteo, ohne Schlüssel) ---------- */
+const code=c=>c<=1?'clear':c<=3||c===45||c===48?'cloudy':(c>=71&&c<=77)||c===85||c===86?'snow':'rain';
+const hf=s=>{const t=s.split('T')[1].split(':');return +t[0]+t[1]/60};
+async function loadWeather(lat=53.55,lon=9.99,place='Hamburg'){
+  try{const r=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code&daily=sunrise,sunset&timezone=auto&forecast_days=1`);
+    const j=await r.json();wxAuto={w:code(j.current.weather_code),t:j.current.temperature_2m,place,sr:hf(j.daily.sunrise[0]),ss:hf(j.daily.sunset[0]),demo:false};
+  }catch(e){wxAuto.demo=true}tick()}
+$('#geo').addEventListener('click',()=>navigator.geolocation&&navigator.geolocation.getCurrentPosition(p=>{wxMode='auto';$('#wsel').value='auto';loadWeather(p.coords.latitude,p.coords.longitude,'Dein Ort')},()=>{},{timeout:6000}));
+$('#wsel').addEventListener('change',e=>{wxMode=e.target.value;tick()});
+$('#rng').addEventListener('input',e=>{manual=+e.target.value;$('#live').classList.remove('on');tick()});
+$('#live').addEventListener('click',()=>{manual=null;$('#live').classList.add('on');tick()});
+/* ---------- Timeline ---------- */
+const ROW=80,HRS=[7,8,9,10,11,12,13,14],tl=$('#tl');
+HRS.forEach((h,i)=>tl.insertAdjacentHTML('beforeend',`<div class="h" style="top:${i*ROW+10}px;--i:${i*.5+2}"><span>${h}:00</span><i></i><hr></div>`));
+const yOf=(h,m)=>(h-7)*ROW+10+m/60*ROW;
+tl.insertAdjacentHTML('beforeend',`<div class="now" style="top:${yOf(7,15)-9}px;--i:3"><em>7:15</em><i></i></div>`);
+[['Team-Meeting','9:30 · 45 min',9,30,'#8c86d8'],['Mittagspause','12:00 · 30 min',12,0,'#6fbfa6'],['Zahnarzt','13:30 · Geh um 13:10 los',13,30,'var(--acc2)']].forEach(([t,s,h,m,c],k)=>
+  tl.insertAdjacentHTML('beforeend',`<button class="ev" ${t==='Zahnarzt'?'data-sheet':''} style="top:${yOf(h,m)-26}px;--c:${c};--i:${5+k}"><b>${t}</b><small>${s}</small></button>`));
+$$('.ui').forEach(u=>[...u.children].forEach((c,i)=>c.style.setProperty('--i',i)));
+$$('.phone').forEach(p=>{p.addEventListener('pointermove',e=>{const r=p.getBoundingClientRect();p.style.setProperty('--px',((e.clientX-r.left)/r.width-.5).toFixed(3));p.style.setProperty('--py',((e.clientY-r.top)/r.height-.5).toFixed(3))});
+  p.addEventListener('pointerleave',()=>{p.style.setProperty('--px',0);p.style.setProperty('--py',0)})});
+function openSheet(phone,from){const sh=document.createElement('div');sh.className='sheet s3';sh.innerHTML=$('#s3').innerHTML;sh.querySelectorAll('.island').forEach(x=>x.remove());
+  const r=phone.getBoundingClientRect(),b=from.getBoundingClientRect(),x=b.left+b.width/2-r.left,y=b.top+b.height/2-r.top;sh.dataset.x=x;sh.dataset.y=y;
+  sh.style.clipPath=`circle(0px at ${x}px ${y}px)`;phone.appendChild(sh);sh.getBoundingClientRect();sh.style.transition='clip-path .75s cubic-bezier(.65,0,.25,1)';
+  sh.style.clipPath=`circle(${Math.hypot(r.width,r.height)}px at ${x}px ${y}px)`;[...sh.querySelectorAll('.ui')].forEach(u=>[...u.children].forEach((c,i)=>c.style.setProperty('--i',i+3)));tick()}
+function closeSheet(sh){sh.style.clipPath=`circle(0px at ${sh.dataset.x}px ${sh.dataset.y}px)`;setTimeout(()=>sh.remove(),780)}
+document.addEventListener('click',e=>{
+  const so=e.target.closest('[data-sheet]');if(so){openSheet(so.closest('.phone'),so);return}
+  const sh=e.target.closest('.sheet');if(sh&&e.target.closest('[aria-label="Zurück"]')){closeSheet(sh);return}
+  const go=e.target.closest('[data-go]');if(go){$(go.dataset.go).scrollIntoView({behavior:'smooth',block:'center',inline:'center'});return}
+  const sb=e.target.closest('.seg button');if(sb){sb.parentNode.querySelectorAll('button').forEach(o=>o.setAttribute('aria-pressed',o===sb));return}
+  const sw=e.target.closest('.sw');if(sw){sw.setAttribute('aria-checked',sw.getAttribute('aria-checked')!=='true')}});
+const d0=now();$('#t4').firstChild.textContent=d0.toLocaleDateString('de-DE',{weekday:'long'});$('#t4 span').textContent=pad(d0.getDate())+'.'+pad(d0.getMonth()+1);
+$('#fk').addEventListener('click',e=>{const on=$('#s4').classList.toggle('focus');e.currentTarget.setAttribute('aria-pressed',on)});
+const items=[{t:'Zahnarzt 13:30',s:'Geh um 13:10 los · 20 min Weg'},{t:'Team-Meeting vorbereiten'},{t:'Wegzeit prüfen'}];
+function render(){$('#ul').innerHTML=items.map((it,i)=>`<li data-d="${!!it.d}"><button class="box" data-i="${i}" role="checkbox" aria-checked="${!!it.d}" aria-label="${it.t}"><svg><use href="#i-ck"/></svg></button><span>${it.t}${it.s?`<small>${it.s}</small>`:''}</span></li>`).join('');$('#cnt').textContent=items.filter(i=>i.d).length+'/'+items.length}
+$('#ul').addEventListener('click',e=>{const b=e.target.closest('.box');if(b){items[b.dataset.i].d=!items[b.dataset.i].d;render()}});render();
+
+/* ---------- Anmelden / Registrierung ---------- */
+$$('.eye').forEach(b=>b.addEventListener('click',()=>{const i=b.parentNode.querySelector('input'),sh=i.type==='password';i.type=sh?'text':'password';
+  b.setAttribute('aria-label',sh?'Passwort verbergen':'Passwort anzeigen');b.querySelector('use').setAttribute('href',sh?'#i-eyeoff':'#i-eye')}));
+const mail=v=>/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v);
+const le=$('#le'),lp=$('#lp');
+le.addEventListener('blur',()=>{const bad=le.value&&!mail(le.value);le.closest('.field').classList.toggle('bad',bad);$('#lh').textContent=bad?'Bitte eine gültige E-Mail eingeben.':''});
+$('#loginBtn').addEventListener('click',e=>{e.preventDefault();if(!mail(le.value)||!lp.value){le.dispatchEvent(new Event('blur'));(mail(le.value)?lp:le).focus();return}$('#login .done').classList.add('show')});
+const sn=$('#sn'),se=$('#se'),sp=$('#sp'),cb=$('#signup .check button'),sb=$('#signBtn');
+const score=v=>[v.length>=8,/[a-z]/.test(v)&&/[A-Z]/.test(v),/\d/.test(v),/[^\w\s]/.test(v)||v.length>=12].filter(Boolean).length;
+const upd=()=>{const sc=score(sp.value);$$('#signup .strength i').forEach((i,n)=>i.classList.toggle('on',n<sc));
+  $('#signup .strength-t').textContent=sp.value?['Zu kurz','Schwach','Okay','Gut','Sehr stark'][sc]:'Passwortstärke';
+  sb.disabled=!(sn.value.trim()&&mail(se.value)&&sp.value.length>=8&&cb.getAttribute('aria-checked')==='true')};
+[sn,se,sp].forEach(i=>i.addEventListener('input',upd));
+cb.addEventListener('click',()=>{cb.setAttribute('aria-checked',cb.getAttribute('aria-checked')!=='true');upd()});
+sb.addEventListener('click',e=>{e.preventDefault();$('#signup .done').classList.add('show')});
+tick();setInterval(tick,1000);loadWeather();
+</script>
+</body>
+</html>
