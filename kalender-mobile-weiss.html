@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Kalender Mobile Weiss</title>
+<style>
+:root{
+  --ink:#43373d; --muted:#a39a9f; --faint:#e3dce0; --line:rgba(120,95,108,.12);
+  --rose:#ecbccb; --rose2:#d68ea5; --rose-soft:#fbeef2; --ok:#8fbfae;
+  --lo:rgba(170,145,156,.34); --hi:rgba(255,255,255,.95);
+}
+*{box-sizing:border-box;margin:0}
+body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--ink);min-height:100vh;
+  background:radial-gradient(1100px 600px at 50% -10%,#fff,#f6f2f3 70%,#eee8ea);
+  display:flex;flex-wrap:wrap;gap:40px;justify-content:center;align-items:center;padding:48px 16px}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
+button:focus-visible,input:focus-visible{outline:2px solid var(--rose2);outline-offset:3px}
+.phone{position:relative;width:402px;height:875px;max-width:calc(100vw - 32px);border-radius:52px;overflow:hidden;
+  background:
+    radial-gradient(380px 300px at 100% 0,rgba(226,238,232,.55),transparent 70%),
+    radial-gradient(420px 340px at 0 100%,rgba(244,226,234,.6),transparent 70%),
+    linear-gradient(170deg,#ffffff,#fcfafa 60%,#f6f1f3);
+  box-shadow:0 0 0 1px #e9e1e4,0 0 0 9px #fff,0 0 0 10px #e6dde1,0 50px 80px -34px rgba(120,95,108,.38),0 24px 34px -24px rgba(120,95,108,.22)}
+.ui{position:absolute;inset:0;padding:0 24px;display:flex;flex-direction:column}
+.status{display:flex;justify-content:space-between;align-items:center;height:54px;padding:6px 14px 0;font-weight:600;font-size:15px}
+.status i{width:18px;height:10px;border-radius:3px;background:var(--ink);display:inline-block;margin-left:6px;opacity:.85}
+.home{position:absolute;bottom:8px;left:50%;translate:-50% 0;width:140px;height:5px;border-radius:9px;background:var(--ink);opacity:.8}
+/* Hintergrund-Uhr: tief, durchscheinend */
+.bgclock{position:absolute;border-radius:50%;aspect-ratio:1;pointer-events:none;opacity:.62;filter:blur(.8px);
+  background:linear-gradient(145deg,rgba(255,255,255,.95),rgba(243,230,236,.85));
+  box-shadow:20px 26px 56px rgba(190,160,172,.42),-14px -14px 36px rgba(255,255,255,.95),inset 0 0 0 1px rgba(255,255,255,.7)}
+.bgclock svg{position:absolute;inset:0;width:100%;height:100%}
+.bgclock .hand line{stroke:#c9bac2!important;opacity:.55}
+.bgclock circle{fill:#c9bac2!important;opacity:.6}
+.bgclock .tick{stroke:#e0d3d9}
+.tick{stroke:#d9cfd4;stroke-width:2;stroke-linecap:round}.tick.big{stroke:#c9bec4;stroke-width:2.6}
+.hand{transform-origin:200px 200px}
+.orb{position:absolute;border-radius:50%;background:radial-gradient(circle at 32% 26%,#fff 0,#fdfafb 28%,#f1e8ec 70%,#e2d6dc 100%);
+  box-shadow:inset -6px -9px 16px rgba(170,140,152,.18),0 22px 28px -14px rgba(150,120,132,.35);pointer-events:none}
+.orb.rose{background:radial-gradient(circle at 32% 26%,#fff,#fbe3ea 45%,#e9aabd 100%);box-shadow:inset -5px -8px 14px rgba(190,100,130,.25),0 18px 24px -12px rgba(190,100,130,.45)}
+.glass{background:rgba(255,255,255,.74);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid #fff;border-radius:26px;
+  box-shadow:12px 16px 36px var(--lo),-6px -6px 16px var(--hi)}
+.tag{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:99px;font-size:12px;background:var(--rose-soft);color:#8a5266}
+.tag::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--rose2)}
+.round{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;flex:none;background:linear-gradient(145deg,#fff,#f6f0f2);
+  box-shadow:6px 8px 16px var(--lo),-5px -5px 12px var(--hi);transition:.25s}
+.round:hover{transform:translateY(-2px)}
+.round svg{width:19px;height:19px;stroke:var(--ink);fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+/* S1 */
+.s1 .date{margin-top:76px;text-align:center;font-size:15px;color:var(--muted);letter-spacing:.04em}
+.s1 .clock{text-align:center;font-weight:800;font-size:92px;letter-spacing:-4px;line-height:1.05;color:var(--ink);text-shadow:0 1px 0 #fff,0 18px 26px rgba(150,120,132,.22)}
+.s1 .idle{text-align:center;margin-top:10px}
+.s1 .idle h2{font-size:23px;font-weight:600}
+.s1 .idle p{display:flex;gap:8px;justify-content:center;align-items:center;margin-top:6px;color:var(--muted);font-size:15px}
+.chk{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(145deg,#bfe0d3,var(--ok));box-shadow:0 8px 12px -5px rgba(110,170,150,.7)}
+.chk svg{width:13px;height:13px;stroke:#fff;fill:none;stroke-width:3.5;stroke-linecap:round;stroke-linejoin:round}
+.next{margin-top:auto;margin-bottom:44px;padding:18px;text-align:left;width:100%;transition:.2s}
+.next:hover{transform:translateY(-4px)}
+.next h3{font-weight:500;font-size:24px;margin:12px 0 4px}.next .sub{font-size:13px;color:var(--muted)}
+.bar{height:4px;border-radius:9px;background:var(--line);margin:14px 0 8px}.bar b{display:block;height:100%;width:62%;border-radius:9px;background:linear-gradient(90deg,var(--rose),var(--rose2))}
+.leave{font-size:13px;font-weight:600}
+/* S2 */
+.head{margin-top:26px}.head small{font-size:15px;color:var(--muted)}
+.head div{display:flex;align-items:center;gap:12px;margin-top:2px}
+.head h1{font-size:38px;font-weight:600;letter-spacing:-1.2px}
+.pillw{padding:5px 12px;border-radius:99px;font-size:12px;background:#fff;box-shadow:3px 4px 10px var(--lo),-3px -3px 8px var(--hi);color:var(--muted)}
+.tl{position:absolute;left:0;right:0;top:196px;height:640px}
+.tl .axis{position:absolute;left:84px;top:0;bottom:0;width:1.5px;background:linear-gradient(var(--faint),var(--faint))}
+.tl .h{position:absolute;left:0;right:24px;height:0}
+.tl .h span{position:absolute;left:24px;top:-8px;width:46px;text-align:right;font-size:12px;color:var(--muted)}
+.tl .h i{position:absolute;left:79.5px;top:-5px;width:11px;height:11px;border-radius:50%;background:#fff;box-shadow:inset 1.5px 1.5px 3px rgba(150,120,132,.4)}
+.tl .h hr{position:absolute;left:96px;right:0;border:0;height:1px;background:var(--line)}
+.now{position:absolute;left:18px;right:24px;display:flex;align-items:center;gap:8px}
+.now em{font-style:normal;font-size:11px;font-weight:600;color:#fff;background:linear-gradient(135deg,var(--rose),var(--rose2));border-radius:8px;padding:3px 7px;box-shadow:0 8px 12px -6px var(--rose2)}
+.now i{flex:1;height:1.5px;background:linear-gradient(90deg,var(--rose2),transparent)}
+.ev{position:absolute;left:104px;right:24px;height:52px;padding:8px 14px 8px 18px;border-radius:18px;text-align:left;font-size:13px;
+  background:rgba(255,255,255,.88);border:1px solid #fff;box-shadow:10px 14px 28px var(--lo),-5px -5px 12px var(--hi);transition:.2s}
+.ev::before{content:"";position:absolute;left:8px;top:12px;bottom:12px;width:3px;border-radius:3px;background:var(--c,var(--rose2))}
+.ev:hover{transform:translateX(-3px)}
+.ev b{display:block;font-weight:600}.ev small{color:var(--muted)}
+/* S3 */
+.s3 .head{margin-top:24px}
+.s3 h1{font-size:44px;line-height:1.04;font-weight:600;letter-spacing:-1.6px;margin-top:4px}.s3 h1 span{display:block;color:var(--muted);font-weight:400}
+.route{padding:14px 16px;margin:18px 0;text-align:center}.route p{font-size:12px;color:var(--muted)}
+.go{display:flex;align-items:center;gap:10px;margin:8px auto;padding:6px 18px 6px 6px;border-radius:99px;background:#fff;width:fit-content;font-size:15px;
+  box-shadow:8px 10px 20px var(--lo),-4px -4px 10px var(--hi)}
+.go u{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--rose),var(--rose2));color:#fff;display:grid;place-items:center;text-decoration:none}
+.lbl{font-size:12px;color:var(--muted);margin-top:14px;letter-spacing:.06em}.val{font-size:14px;font-weight:500;margin-top:2px}
+.seg{display:flex;gap:8px;margin-top:8px}
+.seg button{padding:8px 16px;border-radius:99px;font-size:13px;background:#fff;box-shadow:3px 4px 10px var(--lo),-3px -3px 8px var(--hi);transition:.2s}
+.seg button[aria-pressed=true]{background:linear-gradient(135deg,var(--rose),var(--rose2));color:#fff;box-shadow:0 12px 16px -8px var(--rose2)}
+.rem{display:flex;justify-content:space-between;align-items:center;margin-top:16px;padding-top:14px;border-top:1px solid var(--line);font-size:13px}
+.sw{width:50px;height:30px;border-radius:99px;background:#ece4e8;position:relative;box-shadow:inset 2px 2px 6px rgba(150,120,132,.35);transition:.25s;flex:none}
+.sw::after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;box-shadow:2px 4px 8px rgba(120,90,100,.3);transition:.25s}
+.sw[aria-checked=true]{background:linear-gradient(135deg,var(--rose),var(--rose2))}.sw[aria-checked=true]::after{left:23px}
+.acts{margin-top:auto;margin-bottom:40px;text-align:center}
+.edit{width:100%;padding:15px;border-radius:99px;font-weight:600;color:var(--ink);background:#fff;box-shadow:10px 14px 28px var(--lo),-6px -6px 14px var(--hi);transition:.2s}
+.edit:hover{transform:translateY(-3px)}
+.del{margin-top:14px;font-size:12px;color:#c0786f}
+/* S4 */
+.s4 .bar4{display:flex;align-items:center;justify-content:space-between;margin-top:20px}
+.s4 h1{font-size:26px;font-weight:600;letter-spacing:-.6px;white-space:nowrap}.s4 h1 span{color:var(--faint);margin-left:8px;font-weight:500}
+.fokus{display:flex;align-items:center;gap:8px;padding:4px 12px 4px 4px;border-radius:99px;font-size:12px;color:var(--muted);background:#fff;box-shadow:4px 5px 12px var(--lo),-4px -4px 10px var(--hi)}
+.fokus i{width:32px;height:20px;border-radius:99px;background:#ece4e8;position:relative;box-shadow:inset 2px 2px 4px rgba(150,120,132,.3);transition:.3s}
+.fokus i::after{content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:1px 2px 4px rgba(120,90,100,.3);transition:.3s}
+.fokus[aria-pressed=true] i{background:linear-gradient(135deg,var(--rose),var(--rose2))}.fokus[aria-pressed=true] i::after{left:14px}
+.big{position:relative;margin:26px auto 0;width:330px;aspect-ratio:1;border-radius:50%;background:linear-gradient(145deg,#fffefe,#f6eff1);
+  box-shadow:16px 20px 44px rgba(190,160,172,.36),-12px -12px 32px #fff;transition:.6s}
+.big svg{position:absolute;inset:0;width:100%;height:100%}
+.cap{text-align:center;margin-top:16px;font-size:12px;color:var(--muted)}.cap b{display:block;font-size:24px;font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums}
+.todo{margin-top:auto;margin-bottom:38px;padding:12px 16px 8px;transition:.5s}
+.todo h3{font-size:11px;font-weight:500;color:var(--muted);letter-spacing:.07em;text-transform:uppercase;display:flex;justify-content:space-between;margin-bottom:2px}
+.todo ul{list-style:none;padding:0}
+.todo li{display:flex;gap:10px;align-items:flex-start;padding:8px 0;font-size:13px;border-bottom:1px solid var(--line)}.todo li:last-child{border:0}
+.box{flex:none;width:18px;height:18px;border-radius:6px;margin-top:1px;background:#fff;box-shadow:inset 1.5px 1.5px 4px rgba(150,120,132,.38);display:grid;place-items:center}
+.box svg{width:11px;height:11px;stroke:#fff;fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;opacity:0}
+li[data-d=true] .box{background:linear-gradient(135deg,var(--rose),var(--rose2))}li[data-d=true] .box svg{opacity:1}li[data-d=true] span{color:var(--muted);text-decoration:line-through}
+.todo small{display:block;color:var(--rose2);font-size:11px}
+.s4.focus .todo{opacity:0;pointer-events:none;transform:translateY(10px)}.s4.focus .big{transform:scale(1.1)}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-back" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></symbol>
+  <symbol id="i-share" viewBox="0 0 24 24"><path d="M12 15V4M8 8l4-4 4 4M5 13v6h14v-6"/></symbol>
+  <symbol id="i-cal" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="3"/><path d="M4 10h16M9 3v4M15 3v4"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="9" r="3.5"/><path d="M5 20c1-4 4-6 7-6s6 2 7 6"/></symbol>
+  <symbol id="i-ck" viewBox="0 0 24 24"><path d="M5 12l5 5 9-10"/></symbol>
+</defs></svg>
+
+<!-- 1 Start -->
+<div class="phone s1">
+  <div class="bgclock" data-clock="7:00" style="width:430px;left:-14px;top:150px"></div>
+  <div class="orb" style="width:70px;height:70px;left:48px;top:470px"></div>
+  <div class="orb rose" style="width:34px;height:34px;right:54px;top:150px"></div>
+  <div class="ui">
+    <div class="status"><span>9:41</span><span>●●● <i></i></span></div>
+    <div class="date">Dienstag, 22 Juni</div>
+    <div class="clock">07:00</div>
+    <div class="idle"><h2>Gerade nichts zu tun</h2><p>Genieß die Pause <span class="chk"><svg><use href="#i-ck"/></svg></span></p></div>
+    <button class="glass next" data-go=".s3"><span class="tag">Als Nächstes</span><h3>13:30 · Zahnarzt</h3><div class="sub">In 50 min. · 20 min Weg</div>
+      <div class="bar"><b></b></div><div class="leave">Geh um 13:10 los</div></button>
+    <div class="home"></div>
+  </div>
+</div>
+
+<!-- 2 Heute -->
+<div class="phone s2">
+  <div class="bgclock" data-clock="7:15" style="width:470px;left:150px;top:470px"></div>
+  <div class="orb" style="width:96px;height:96px;left:-34px;top:690px"></div>
+  <div class="ui">
+    <div class="status"><span>9:41</span><span>●●● <i></i></span></div>
+    <div class="head"><small>Dienstag, 22 Juni</small><div><h1>Heute</h1><span class="pillw">3 Erinnerungen</span></div></div>
+    <div class="tl" id="tl">
+      <div class="axis"></div>
+    </div>
+    <div class="home"></div>
+  </div>
+</div>
+
+<!-- 3 Termin -->
+<div class="phone s3">
+  <div class="bgclock" data-clock="13:30" style="width:450px;left:110px;top:440px"></div>
+  <div class="orb" style="width:84px;height:84px;right:28px;top:690px"></div>
+  <div class="ui">
+    <div class="status"><span>9:41</span><span>●●● <i></i></span></div>
+    <div style="display:flex;justify-content:space-between;margin-top:14px">
+      <button class="round" aria-label="Zurück" data-go=".s2"><svg><use href="#i-back"/></svg></button>
+      <button class="round" aria-label="Teilen"><svg><use href="#i-share"/></svg></button></div>
+    <div class="head"><small>Dienstag, 22 Juni</small><h1>Heute <span>Zahnarzt</span>13:30</h1></div>
+    <div class="glass route"><p>Damit du es entspannt schaffst</p><div class="go"><u>→</u>Geh um 13:10 los</div><p>20 min. Weg zur Praxis</p></div>
+    <div class="lbl">ORT</div><div class="val">Praxis Dr. Berg · Königstr. 12</div>
+    <div class="lbl">PRIORITÄT</div>
+    <div class="seg" role="group" aria-label="Priorität"><button aria-pressed="false">Normal</button><button aria-pressed="false">Mittel</button><button aria-pressed="true">Wichtig</button></div>
+    <div class="rem"><span>Erinnerung<br><small style="color:var(--muted)">Automatisch · Rechtzeitig</small></span><button class="sw" role="switch" aria-checked="true" aria-label="Erinnerung"></button></div>
+    <div class="acts"><button class="edit">Bearbeiten</button><div class="del">Termin entfernen</div></div>
+    <div class="home"></div>
+  </div>
+</div>
+
+<!-- 4 Uhr / Fokus -->
+<div class="phone s4" id="s4">
+  <div class="orb" style="width:60px;height:60px;left:-14px;top:300px"></div>
+  <div class="orb rose" style="width:28px;height:28px;right:30px;top:420px"></div>
+  <div class="ui">
+    <div class="status"><span>9:41</span><span>●●● <i></i></span></div>
+    <div class="bar4"><div style="display:flex;align-items:center;gap:12px"><button class="round" aria-label="Kalender"><svg><use href="#i-cal"/></svg></button><h1 id="t4">Freitag<span>02.10</span></h1></div>
+      <button class="fokus" id="fk" aria-pressed="false"><i></i>Fokus</button></div>
+    <div class="big" id="big"></div>
+    <div class="cap"><b id="dig">--:--</b><span id="nxt"></span></div>
+    <section class="glass todo" aria-label="Heute"><h3><span>Heute</span><span id="cnt"></span></h3><ul id="ul"></ul></section>
+    <div class="home"></div>
+  </div>
+</div>
+
+<script>
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const NS='http://www.w3.org/2000/svg';
+const pt=(deg,r)=>[200+Math.sin(deg*Math.PI/180)*r,200-Math.cos(deg*Math.PI/180)*r];
+function clockSVG(el,h,m,o={}){
+  let t='';for(let i=0;i<12;i++){const big=i%3===0,[x1,y1]=pt(i*30,big?170:176),[x2,y2]=pt(i*30,188);t+=`<line class="tick ${big?'big':''}" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"/>`}
+  const ah=((h%12)+m/60)*30,am=m*6;
+  t+=`<g id="${o.id||''}arc"></g><g class="hand" style="transform:rotate(${ah}deg)"><line x1="200" y1="200" x2="200" y2="118" stroke="#43373d" stroke-width="5" stroke-linecap="round"/></g>
+  <g class="hand" style="transform:rotate(${am}deg)"><line x1="200" y1="200" x2="200" y2="66" stroke="#43373d" stroke-width="3.2" stroke-linecap="round"/></g>
+  ${o.sec?'<g class="hand" id="sh"><line x1="200" y1="222" x2="200" y2="58" stroke="#d68ea5" stroke-width="1.8" stroke-linecap="round"/></g>':''}
+  <circle cx="200" cy="200" r="7" fill="#43373d"/><circle cx="200" cy="200" r="2.6" fill="#d68ea5"/>`;
+  el.innerHTML=`<svg viewBox="0 0 400 400" aria-hidden="true">${t}</svg>`;
+}
+$$('[data-clock]').forEach(e=>{const[h,m]=e.dataset.clock.split(':').map(Number);clockSVG(e,h,m)});
+// Timeline
+const ROW=80,HRS=[7,8,9,10,11,12,13,14],tl=$('#tl');
+HRS.forEach((h,i)=>{tl.insertAdjacentHTML('beforeend',`<div class="h" style="top:${i*ROW+10}px"><span>${h}:00</span><i></i><hr></div>`)});
+const yOf=(h,m)=>(h-7)*ROW+10+m/60*ROW;
+tl.insertAdjacentHTML('beforeend',`<div class="now" style="top:${yOf(7,15)-9}px"><em>7:15</em><i></i></div>`);
+[['Team-Meeting','9:30 · 45 min',9,30,'#a9a3dc'],['Mittagspause','12:00 · 30 min',12,0,'#8fbfae'],['Zahnarzt','13:30 · Geh um 13:10 los',13,30,'#d68ea5']].forEach(([t,s,h,m,c])=>
+  tl.insertAdjacentHTML('beforeend',`<button class="ev" ${t==='Zahnarzt'?'data-go=".s3"':''} style="top:${yOf(h,m)-26}px;--c:${c}"><b>${t}</b><small>${s}</small></button>`));
+// S3 interactions
+$$('.seg button').forEach(b=>b.addEventListener('click',()=>$$('.seg button').forEach(o=>o.setAttribute('aria-pressed',o===b))));
+$('.sw').addEventListener('click',e=>e.currentTarget.setAttribute('aria-checked',e.currentTarget.getAttribute('aria-checked')!=='true'));
+$$('[data-go]').forEach(b=>b.addEventListener('click',()=>$(b.dataset.go).scrollIntoView({behavior:'smooth',block:'center',inline:'center'})));
+// S4 live clock
+const q=new URLSearchParams(location.search).get('zeit');
+const now=()=>{const d=new Date();if(q){const[h,m]=q.split(':').map(Number);d.setHours(h,m,0,0)}return d};
+const A=[{h:9,m:30,t:'Team-Meeting'},{h:13,m:30,t:'Zahnarzt'}];
+function tick(){const d=now(),s=q?0:d.getSeconds(),mi=d.getMinutes()+s/60,h=(d.getHours()%12)+mi/60;
+  if(!$('#big svg'))clockSVG($('#big'),0,0,{sec:true,id:'b'});
+  const hs=$$('#big .hand');hs[0].style.transform=`rotate(${h*30}deg)`;hs[1].style.transform=`rotate(${mi*6}deg)`;hs[2].style.transform=`rotate(${s*6}deg)`;
+  $('#dig').textContent=String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+  const mins=d.getHours()*60+d.getMinutes(),nx=A.find(a=>a.h*60+a.m>mins),arc=$('#barc');
+  if(nx){const df=nx.h*60+nx.m-mins;$('#nxt').textContent=`${nx.t} · in ${Math.floor(df/60)?Math.floor(df/60)+' Std. ':''}${df%60} Min.`;
+    const a0=h*30,a1=((nx.h%12)+nx.m/60)*30,e=a1<a0?a1+360:a1,[x0,y0]=pt(a0,156),[x1,y1]=pt(e,156);
+    arc.innerHTML=`<path d="M${x0} ${y0} A156 156 0 ${e-a0>180?1:0} 1 ${x1} ${y1}" fill="none" stroke="#e3a2b6" stroke-width="5" stroke-linecap="round" opacity=".9"/><circle cx="${x1}" cy="${y1}" r="7" fill="#fff" stroke="#d68ea5" stroke-width="3"/>`;
+  }else{arc.innerHTML='';$('#nxt').textContent='Heute nichts mehr – genieß die Pause'}}
+tick();setInterval(tick,1000);
+const d0=now();$('#t4').firstChild.textContent=d0.toLocaleDateString('de-DE',{weekday:'long'});$('#t4 span').textContent=String(d0.getDate()).padStart(2,'0')+'.'+String(d0.getMonth()+1).padStart(2,'0');
+$('#fk').addEventListener('click',e=>{const on=$('#s4').classList.toggle('focus');e.currentTarget.setAttribute('aria-pressed',on)});
+const items=[{t:'Zahnarzt 13:30',s:'Geh um 13:10 los · 20 min Weg'},{t:'Team-Meeting vorbereiten'},{t:'Wegzeit prüfen'}];
+function render(){$('#ul').innerHTML=items.map((it,i)=>`<li data-d="${!!it.d}"><button class="box" data-i="${i}" role="checkbox" aria-checked="${!!it.d}" aria-label="${it.t}"><svg><use href="#i-ck"/></svg></button><span>${it.t}${it.s?`<small>${it.s}</small>`:''}</span></li>`).join('');$('#cnt').textContent=items.filter(i=>i.d).length+'/'+items.length}
+$('#ul').addEventListener('click',e=>{const b=e.target.closest('.box');if(b){items[b.dataset.i].d=!items[b.dataset.i].d;render()}});render();
+</script>
+</body>
+</html>
