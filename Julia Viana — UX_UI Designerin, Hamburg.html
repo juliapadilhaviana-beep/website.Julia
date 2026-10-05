@@ -916,7 +916,10 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 .go u{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff;display:grid;place-items:center;text-decoration:none}
 .lbl{font-size:12px;color:var(--muted);margin-top:14px;letter-spacing:.06em}.val{font-size:14px;font-weight:500;margin-top:2px}
 .seg{display:flex;gap:8px;margin-top:8px}.seg button{padding:8px 16px;border-radius:99px;font-size:13px;background:var(--surf);box-shadow:3px 4px 10px var(--lo),-3px -3px 8px var(--hi);transition:.2s}
-.seg button[aria-pressed=true]{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff}
+.seg button{display:inline-flex;align-items:center;gap:7px}
+.seg button i{width:8px;height:8px;border-radius:50%;background:var(--pc);flex:none}
+.seg button[aria-pressed=true]{background:var(--pc);color:var(--pt);box-shadow:0 12px 18px -8px var(--pc),inset 0 1px 0 rgba(255,255,255,.25)}
+.seg button[aria-pressed=true] i{background:var(--pt)}
 .rem{display:flex;justify-content:space-between;align-items:center;margin-top:16px;padding-top:14px;border-top:1px solid var(--line);font-size:13px}
 .sw{width:50px;height:30px;border-radius:99px;background:var(--swoff);position:relative;box-shadow:inset 2px 2px 6px var(--lo);transition:.25s;flex:none}
 .sw::after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;box-shadow:2px 4px 8px rgba(0,0,0,.3);transition:.25s}
@@ -1039,7 +1042,7 @@ li[data-d=true] .box{background:linear-gradient(135deg,var(--acc),var(--acc2))}l
     <div class="glass route"><p>Damit du es entspannt schaffst</p><div class="go"><u>→</u>Geh um 13:10 los</div><p>20 min. Weg zur Praxis</p></div>
     <div class="lbl">ORT</div><div class="val">Praxis Dr. Berg · Königstr. 12</div>
     <div class="lbl">PRIORITÄT</div>
-    <div class="seg" role="group" aria-label="Priorität"><button aria-pressed="false">Normal</button><button aria-pressed="false">Mittel</button><button aria-pressed="true">Wichtig</button></div>
+    <div class="seg" role="group" aria-label="Priorität"><button style="--pc:#2b8a69;--pt:#fff" aria-pressed="false"><i></i>Normal</button><button style="--pc:#f2b134;--pt:#2a1d00" aria-pressed="false"><i></i>Mittel</button><button style="--pc:#d24a45;--pt:#fff" aria-pressed="true"><i></i>Wichtig</button></div>
     <div class="rem"><span>Erinnerung<br><small class="muted">Automatisch · Rechtzeitig</small></span><button class="sw" role="switch" aria-checked="true" aria-label="Erinnerung"></button></div>
     <div class="acts"><button class="edit">Bearbeiten</button><div class="del">Termin entfernen</div></div>
     <div class="home"></div>
@@ -1197,7 +1200,7 @@ const ROW=80,HRS=[7,8,9,10,11,12,13,14],tl=$('#tl');
 HRS.forEach((h,i)=>tl.insertAdjacentHTML('beforeend',`<div class="h" style="top:${i*ROW+10}px;--i:${i*.5+2}"><span>${h}:00</span><i></i><hr></div>`));
 const yOf=(h,m)=>(h-7)*ROW+10+m/60*ROW;
 tl.insertAdjacentHTML('beforeend',`<div class="now" style="top:${yOf(7,15)-9}px;--i:3"><em>7:15</em><i></i></div>`);
-[['Team-Meeting','9:30 · 45 min',9,30,'#8c86d8'],['Mittagspause','12:00 · 30 min',12,0,'#6fbfa6'],['Zahnarzt','13:30 · Geh um 13:10 los',13,30,'var(--acc2)']].forEach(([t,s,h,m,c],k)=>
+[['Team-Meeting','9:30 · 45 min',9,30,'#f2b134'],['Mittagspause','12:00 · 30 min',12,0,'#2b8a69'],['Zahnarzt','13:30 · Geh um 13:10 los',13,30,'#d24a45']].forEach(([t,s,h,m,c],k)=>
   tl.insertAdjacentHTML('beforeend',`<button class="ev" ${t==='Zahnarzt'?'data-sheet':''} style="top:${yOf(h,m)-26}px;--c:${c};--i:${5+k}"><b>${t}</b><small>${s}</small></button>`));
 $$('.ui').forEach(u=>[...u.children].forEach((c,i)=>c.style.setProperty('--i',i)));
 $$('.phone').forEach(p=>{p.addEventListener('pointermove',e=>{const r=p.getBoundingClientRect();p.style.setProperty('--px',((e.clientX-r.left)/r.width-.5).toFixed(3));p.style.setProperty('--py',((e.clientY-r.top)/r.height-.5).toFixed(3))});
